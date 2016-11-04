@@ -1,18 +1,22 @@
 # RaspiSecureSystem
-Small project with IP camera, Raspi and Arduino for a simple security system
+Aquest és un petit projecte per l'especialitat d'IT de la carrera de Grau en Enginyeria Informàtica de la FIB, que consisteix en crear un petit sistema de seguretat mitjançant una Raspberry Pi (model 3 B), una càmera IP (Dlink DCS-932L) i un arduino (UNO). juntament amb alguns sensros com puguin ser de moviment o temperatura.
 
-##Instal·lar el SO
+A continuació es detalles els passos que s'han seguit per tal de poder congifurar-ho tot, tant per la part de la Raspberry Pi com de la resta de components.
 
-##Assignar IP estàtica
+##Raspberry Pi
 
-##Camviar el port SSH (opcional)
+###Instal·lar el SO
 
-##Instal·lar i configurar no-ip
+###Assignar IP estàtica
 
-##Instal·lar un servidor ftp
+###Canviar el port SSH (opcional)
 
-##Instal·lar un servidor WEB
+###Instal·lar i configurar no-ip
 
-##Configurar notificacions amb l'API de Pushover
+###Instal·lar un servidor ftp
+
+###Instal·lar un servidor WEB
+
+###Configurar notificacions amb l'API de Pushover
 
 ##
