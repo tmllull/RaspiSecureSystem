@@ -1,38 +1,254 @@
 # RaspiSecureSystem
-Aquest és un projecte per a l'especialitat d'IT de la carrera de _Grau en Enginyeria Informàtica_ de la FIB, que consisteix en crear un petit sistema de seguretat. Els materials que s'han fet servir han estat:
-- Raspberry Pi (model 1 B)
-- Dongle WiFi
+Aquest és un projecte per a l'especialitat d'IT de la carrera de _Grau en Enginyeria Informàtica_ de la FIB, que consisteix en crear un petit sistema de seguretat utilitzant una Raspberry Pi (a partir d'ara, Raspi), una càmera IP, un Arduino i varis sensors.
+
+Aquest sistema ens permetrà veure què passa a la nostra casa o habitació des d'una pàgina web, i gràcies a un sensor de movient podrem fer que la càmera faci una foto i ens l'envii per correu o ens avisi amb una notificació al mòbil.
+
+De la mateixa manera farem servir un sensor de temperatura que ens podrà servir com a "detector d'incendis", i podrem fer també que si passa d'una certa temperatura ens avisi d'alguna manera. Afegirem també l'opció de poder encendre o apagar alguns llums remotament (via web), per si arribem tard a casa poder "fer veure" que hi ha algú.
+
+Tant l'accés a la càmera com controlar els llums també es podrà fer des d'una aplicació mòbil.
+
+Els materials que s'han fet servir han estat:
+
+- Raspberry Pi (model 3 B)
 - Càmera IP (Dlink DCS-932L)
 - Arduino (UNO)
 - Targeta de memòria SD de 32GB classe 10
 - Sensor de temperatura
 - Sensor de moviment
 
-A continuació es detalles els passos que s'han seguit per tal de poder congifurar-ho tot, tant per la part de la Raspberry Pi com de la resta de components.
+A continuació es detalles els passos que s'han seguit per tal de poder congifurar-ho tot.
 
-##Raspberry Pi
-Pel que fa referència a la Raspi, s'han seguit aquests pasos i en l'ordre descrit:
+## Raspberry Pi
+Pel que fa referència a la Raspi, s'han seguit aquests pasos:
 
-1. Instal·lar el SO
-Per instal·lar el SO ens hem servit de l'eina que ens proporciona la comunitat de Raspberry, anomenada NOOBS, el que ens permet instal·lar el sistema de forma guiada i d'una manera senzilla.
-
-El primer que hem de fer és baixar NOOBS de la pàgina de Raspberry i descomprimir-lo. A continuació hem de donar format a la targeta; per això podem fer servir l'eina SDFormatter, oficial de la comunitat SD, que ens permet fer-ho també d'una forma molt senzilla.
-
-Una vegada tenim la targeta formatejada i NOOBS descomprimit, copiem tot el contingut de la carpeta dins de la targeta. 
-***COMPTE:*** NO copiar la carpeta com a únic arxiu, sino tots els arxius dins de la mateixa. 
-
-Per fer la instal·lació ens ajudarem d'una pantalla HDMI, d'un teclat i un ratolí. Connectem tots els perifèrics a la Raspi i la connectem a la corrent. Després d'uns moments ens apareixerà una pantalla con ens demana 
-
-2. Assignar IP estàtica
-
-3. Canviar el port SSH (opcional)
-
+1. Instal·lar i preparar el SO
+2. Assignar una IP estàtica
+3. Canviar el port SSH (Opcional)
 4. Instal·lar i configurar no-ip
+5. -
+6. -
+7. -
+8. -
 
-5. Instal·lar un servidor ftp
+### 1. Instal·lar i preparar el SO
 
-6. Instal·lar un servidor WEB
+El SO escollit per aquest projecte ha estat ***Raspbian*** versió *"Pixel"*, una distribució Linux basada en Debian-Jessie i adaptada pel chip ARM de la Raspi. Per instal·lar el SO ens hem servit de l'eina que ens proporciona la comunitat de Raspberry, anomenada *NOOBS*, el que ens permet instal·lar el sistema d'una forma senzilla.
 
-7. Configurar notificacions amb l'API de Pushover
 
-##
+El primer que hem de fer és baixar [NOOBS](https://downloads.raspberrypi.org/NOOBS_latest) de la pàgina de Raspberry Pi i descomprimir-lo. A continuació hem de donar format a la targeta; per això podem fer servir l'eina [SDFormatter](https://www.sdcard.org/downloads/formatter_4/), oficial de SD Association.
+
+Una vegada tenim la targeta formatejada i NOOBS descomprimit, copiem tot el contingut de la carpeta NOOBS dins de la targeta.
+
+***COMPTE:*** NO copiar la carpeta com a únic arxiu, sino tots els arxius que trobem dins de la mateixa. 
+
+Per fer la instal·lació ens ajudarem d'una pantalla amb entrada HDMI, un teclat i un ratolí. Connectem tots els perifèrics a la Raspi i la connectem a la corrent. Després d'uns moments ens apareixerà una pantalla on ens demana quin sistema volem instal·lar. Seleccionem *Raspbian* i cliquem "Install". Aquest procés pot tardar entre 20 i 30 minuts.
+
+Quan la instal·lació hagi acabat, reiniciem el sistema i ja podrem arrencar Raspbian normalment. De moment encara mantenim tant la pantalla com teclat i ratolí, ja que ens queda fer algunes configuracions.
+
+Des del menú d'aplicacions anirem a---------------------------------------------------------------------------------------------------------------------------------------
+
+###2. Assignar IP estàtica
+
+Una part important i que dóna sentit a una Raspi és el fet de poder accedir a ella des de qualsevol lloc a través de terminal. Això ho podem fer sempre i quan sapiguem la seva adreça IP però, com sabem, aquesta pot anar canviant si el router que ens l'assigna (normalment per DHCP) es reinicia, o si apaguem la Raspi durant un temps i la tornem a connectar. Per evitar-ho li assignarem una IP estàtica i així ens asegurarem que sempre té la mateixa.
+
+Per fer això tenim varies opcions:
+
+####Opció 1:
+Abans de res ens connectem a la nostra WiFi normalment, i d'aquesta manera ja tindrem regisrat el SSID i Password. A continuació obrim un terminal amb la combinació de tecles **Ctrl+Alt+t**. Podem fer-ho també des del menú d'aplicacions.
+
+A continuació hem de modificar l'arxiu *dhcpcd.conf*
+	
+	sudo nano /etc/dhcpcd.conf
+
+Afegir al final el següent codi si volem fer la connexió per cable:
+
+	interface eth0
+
+	static ip_address=192.168.1.XX/24
+	static routers=192.168.1.1
+	static domain_name_servers=192.168.1.1
+	
+O aquest si la volem fer per WiFi:
+
+	interface wlan0
+
+	static ip_address=192.168.1.XX/24
+	static routers=192.168.1.1
+	static domain_name_servers=192.168.1.1
+
+Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
+
+**NOTA**: Substituir el valor XX per l'adreça que vulguem, tenint en compte de posar un valor que estigui fora del rang DHCP. Normalment aquest rang comença a donar adreces a partir del 33 (tot i que pot variar), però dificilment comença per adreces més baixes. Això ens permet assignar sense cap problema adreces a partir de la 2. Igualment, hem de posar l'adreça del router i DNS que correspongui amb el nostre router. Normalment sol ser 192.168.1.1 en la majoria de routers, però assegureu-vos abans per si de cas.
+
+####Opció 2:
+
+L'altre opció és modificar directament l'arxiu interfaces
+
+	sudo nano /etc/network/interfaces
+
+I modifiquem les dades de wlan0 per les següents si farem servir el WiFi:
+
+	auto wlan0
+    allow-hotplug wlan0
+    iface wlan0 inet static
+    address 192.168.1.XX
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+    wpa-passphrase wifi-password
+    wpa-ssid my-ssid
+
+Canviant *wifi-password* pel password de la nostra xarxa, *my-ssid* pel nom de la nostra xarxa, i modificant el valor XX per l'adreça que volem.
+
+O les dades de eth0 si ens connectarem per cable:
+
+	auto eth0
+	iface eth0 inet static
+    address 192.168.1.XX
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+
+Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
+
+####Opció 3:
+
+Ens queda encara una altra opció, que és fer servir l'arxiu wpa_supplicant.conf
+
+	sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+
+Aquest arxiu és l'encarregat de guardar els noms i contrassenyes de les xarxes WiFi, i per tant haurem d'afegir al final la nostra xarxa si no ens hem connectat amb anterioritat a la xarxa WiFi. Si ja tenim una xarxa amb el nom i password correctes, no cal fer res:
+
+	network={
+    ssid="WiFi_name"
+    psk="Wifi_password"
+	}
+
+Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
+
+Ara anem a modificar l'arxiu interfaces
+
+	sudo nano /etc/network/interfaces
+
+I canviem la part de wlan0 pel següent, si farem servir la connexió WiFi:
+
+	allow-hotplug wlan0
+	iface wlan0 inet static
+	address 192.168.1.XX
+	netmask 255.255.255.0
+	gateway 192.168.1.1
+	wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+O la part de eth0 si ens connectarem per cable:
+
+	auto eth0
+	iface eth0 inet static
+    address 192.168.1.XX
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+
+Com veiem, els canvis d'aquest arxiu son molt semblants a l'opció 2, però aquí no posem explícitament el nom i password de la nostra xarxa, sino que ens servim de l'arxiu wpa_supplicant.conf. Pensar a canviar el valor XX de l'adreça IP.
+
+Després reiniciarem la Raspi:
+
+	sudo reboot now
+
+I una vegada hagi tornat arrencar, comprovarem que ens ha assignat l'adreça que li hem dit amb ifconfig:
+
+	ifcongif
+
+En cas que no ho hagi fet, revisem els arxius que hem modificat per si ens hem errat en alguna cosa.
+
+En aquest moment ja ens podem desfer de la pantalla, teclat i ratolí, ja que totes les comunicacions les farem per ssh. La manera d'accedir a la Raspi és, des d'un terminal de Linux/Mac teclejar el següent:
+
+	ssh pi@192.168.1.XX
+
+Ens demanarà la contrassenya que hem modificat al punt 1 (*Mentre s'escriu la contrassenya no es veurà res per pantalla.*) i ja estarem connectats a la Raspi.
+
+###3. Canviar el port SSH (opcional)
+
+Addicionalment podriem voler emprar un port SSH diferent de l'standart (per defecte és el 22). Això ens pot ser útil si volem accedir a la Raspi des de fora de casa i el port 22 ja està utilitzat, o per intentar tenir una mica més de seguretat evitant valors per defecte.
+
+Per fer-ho modifiquem l'arxiu sshd_config
+
+	sudo nano /etc/ssh/sshd_config
+
+Busquem la linia on indica el port, i el canviem pel que ens interessi, ja sigui modificant la linia en qüestió o comentant aquesta i afegint una nova
+
+	#port 22
+	port 2214
+
+I reiniciem el servidor ssh
+
+	sudo service ssh restart
+
+Una vegada fet el canvi, la manera d'accedir a la Raspi per terminal serà
+
+	ssh -p 2214 pi@192.168.1.XX
+
+Sent XX l'adreça que li haurem donat a la Raspi en el punt 2.
+
+
+###4. Instal·lar i configurar no-ip
+
+De la mateixa manera que les direccions IP locals poden canviar, també ho fan les direccions IP públiques, pel que potser que ara en tiguem una, i demà una altra. Això és un problems si intentem accedir a la Raspi des de fora de la xarxa local, ja que no sabrem quina direcció tenim assignada. Per evitar aquest problema, ens ajudarem del servei no-ip.
+
+No-ip és un servidor DNS que el que fa és traduir una direcció web (http://www.google.com) a la seva IP pública (http://74.125.224.72, per exemple). Així, el que farem ara serà accedir a noip.com, crear un compte (gratuit) i registrar un domini, per exemple elmeudomini.ddns.net.
+
+Quan ja tenim el nostre domini registrat, toca instal·lar el client a la Raspi. Accedim a la Raspi per ssh amb la següent comanda:
+
+	ssh pi@192.168.1.XX
+
+Abans ens assegurarem de tenir el sistema actualitzat, pel que farem un update i un upgrade:
+
+	sudo apt-get update && sudo apt-get upgrade
+
+És recomanable fer aquest procés cada cert temps, ja que hi pot haver actualitzacions de seguretat del sistema o d'alguna altra aplicació.
+
+A continuació descarreguem el client de no-ip
+
+	wget http://www.no-ip.com/client/linux/noip-duc-linux.tar.gz
+
+El descomprimim
+
+	tar -zxvf noip-duc-linux.tar.gz
+
+Accedim a la carpeta que s'ha creat i l'instal·lem
+
+	cd noip-2.1.9-1
+	sudo make
+	sudo make install
+
+En aquest punt ens demanarà el nom d'usuari i la contrassenya del nostre compte de no-ip, i degut a que només tindrem un domini registrat, agafarà aquest per defecte. El temps de refresc el podem deixar per defecte, i a la següent pregunta, respondrem que no (n).
+
+Ara creem un nou fitxer que li direm noip2
+
+	sudo nano /etc/init.d/noip2
+
+I afegim la següent comanda
+
+	sudo /usr/local/bin/noip2
+
+Guardem el fitxer amb Ctrl+x --> y --> enter, i li donem permissos d'execució
+
+	sudo chmod +x /etc/init.d/noip2
+
+Actualitzem el fitxer d'inici perquè arranqui cada vegada que engeguem la Raspi
+
+	sudo update-rc.d noip2 defaults
+
+I posem el servei en marxa
+
+	sudo /usr/local/bin/noip2
+
+Amb això ja tenim configurat no-ip, pel que hauriem de poder accedir a la nostra raspi des de qualsevol lloc fora de la nostra xarxa local. No ho podrem provar sempre que estiguiem connectats a la propia xarxa, i per això ho podem provar des del mòbil (amb una aplicació com JuiceSSH, per Android), o demanant a algú que estigui en una altra xarxa que ens ho miri.
+
+Des del terminal (o PuTTY si estem utilitzant Windows) teclegem
+
+ssh pi@elmeudomini.ddns.net
+
+###5. Obrir els ports del router
+
+###6. Instal·lar un servidor ftp
+
+###7. Instal·lar un servidor WEB
+
+###8. Configurar notificacions amb l'API de Pushover
