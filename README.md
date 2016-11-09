@@ -32,7 +32,7 @@ Pel que fa referència a la Raspi, s'han seguit aquests pasos:
 
 ### 1. Instal·lar i preparar el SO
 
-El SO escollit per aquest projecte ha estat ***Raspbian*** versió *"Pixel"*, una distribució Linux basada en Debian-Jessie i adaptada pel chip ARM de la Raspi. Per instal·lar el SO ens hem servit de l'eina que ens proporciona la comunitat de Raspberry, anomenada *NOOBS*, el que ens permet instal·lar el sistema d'una forma senzilla.
+El SO escollit per aquest projecte ha estat ***Raspbian*** versió *"Pixel"*, una distribució Linux basada en Debian-Jessie i adaptada pel chip ARM de la Raspi. Per instal·lar el SO ens hem servit de l'eina que ens proporciona la comunitat de Raspberry, anomenada *NOOBS*, el que ens permet instal·lar el sistema d'una forma senzilla, o de la forma que més ens agradi.
 
 
 El primer que hem de fer és baixar [NOOBS](https://downloads.raspberrypi.org/NOOBS_latest) de la pàgina de Raspberry Pi i descomprimir-lo. A continuació hem de donar format a la targeta; per això podem fer servir l'eina [SDFormatter](https://www.sdcard.org/downloads/formatter_4/), oficial de SD Association.
@@ -43,15 +43,17 @@ Una vegada tenim la targeta formatejada i NOOBS descomprimit, copiem tot el cont
 
 Per fer la instal·lació ens ajudarem d'una pantalla amb entrada HDMI, un teclat i un ratolí. Connectem tots els perifèrics a la Raspi i la connectem a la corrent. Després d'uns moments ens apareixerà una pantalla on ens demana quin sistema volem instal·lar. Seleccionem *Raspbian* i cliquem "Install". Aquest procés pot tardar entre 20 i 30 minuts.
 
-Quan la instal·lació hagi acabat, reiniciem el sistema i ja podrem arrencar Raspbian normalment. De moment encara mantenim la pantalla, teclat i ratolí, ja que ens queda fer algunes configuracions.
+Quan la instal·lació hagi acabat, reiniciem el sistema i ja podrem arrencar Raspbian normalment.
 
-Des del menú d'aplicacions anirem a Preferences --> Mouse and Keyboard Settings, i posarem el teclat en Espanyol (Català).
+Des del menú d'aplicacions anirem a *Preferences --> Mouse and Keyboard Settings*, i posarem el teclat en Espanyol (Català).
 
-A continuació anirem a Preferences --> Raspberry Pi Configuration, modificarem el **password**, i marcarem l'opció de **Boot** que diu *To CLI*. Això farà que quan arrenqui la Raspi no carregui l'entorn gràfic, ja que normalment no el farem servir i així tenim més recursos disponibles.
+A continuació anirem a *Preferences --> Raspberry Pi Configuration*, modificarem el **password**, i marcarem l'opció de **Boot** que diu *To CLI*. Això farà que quan arrenqui la Raspi no carregui l'entorn gràfic, ja que normalment no el farem servir i així tenim més recursos disponibles.
 
-En cas que volguem accedir a l'entorn gràfic (si tenim la Raspi conectada a una tele o pantalla, per exemple), ho podrem fer amb la comanda *startx*
+En cas que vulguem accedir a l'entorn gràfic (si tenim la Raspi conectada a una tele o pantalla, per exemple), ho podrem fer amb la comanda *startx*
 
 	startx
+
+ De moment encara mantenim la pantalla, teclat i ratolí, ja que ens queda fer algunes configuracions.
 
 ###2. Assignar IP estàtica
 
@@ -59,7 +61,7 @@ Una part important i que dóna sentit a una Raspi és el fet de poder accedir a 
 
 Per fer això tenim varies opcions:
 
-####Opció 1:
+####Opció 1 (la més senzilla):
 Abans de res ens connectem a la nostra WiFi, d'aquesta manera ja tindrem regisrat el SSID i Password, i a continuació obrim un terminal amb la combinació de tecles **Ctrl+Alt+t**. Podem fer-ho també des del menú d'aplicacions.
 
 A continuació hem de modificar l'arxiu *dhcpcd.conf*
@@ -84,11 +86,11 @@ O aquest si la volem fer per WiFi:
 
 Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
 
-**NOTA:** Substituim el valor XX per l'adreça que vulguem, tenint en compte de posar un valor que estigui fora del rang DHCP. Normalment es comencen a donar adreces a partir del número 33 (tot i que pot variar), però dificilment comença per adreces baixes. Això ens permet assignar sense cap problema adreces a partir de la 2. Igualment, hem de posar l'adreça del router i DNS que correspongui amb el nostre router. Normalment sol ser 192.168.1.1 en els routers domèstics, però assegureu-vos abans per si de cas.
+**NOTA:** Substituim el valor XX per l'adreça que vulguem, tenint en compte de posar un valor que estigui fora del rang DHCP. Normalment es comencen a donar adreces a partir del número 33 (tot i que pot variar), però dificilment comença per adreces baixes. Això ens permet assignar sense cap problema adreces a partir de la 2 o la 3. Igualment, hem de posar l'adreça del router i DNS que correspongui amb el nostre router, i normalment sol ser 192.168.1.1 en els routers domèstics, però assegureu-vos abans per si de cas.
 
-####Opció 2:
+####Opció 2 (modificant l'arxiu interfaces):
 
-L'altre opció és modificar directament l'arxiu interfaces
+Una altra opció és modificar directament l'arxiu interfaces
 
 	sudo nano /etc/network/interfaces
 
@@ -115,9 +117,9 @@ O les dades de eth0 si ens connectarem per cable:
 
 Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
 
-####Opció 3:
+####Opció 3 (modificant els arxius interfaces i wpa_supplicant):
 
-Ens queda encara una altra opció, que és fer servir l'arxiu *wpa_supplicant.conf*
+Ens queda encara una alternativa, que és fer servir l'arxiu *wpa_supplicant.conf*
 
 	sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
 
@@ -153,11 +155,14 @@ O la part de eth0 si ens connectarem per cable:
 
 Com veiem, els canvis d'aquest arxiu son molt semblants a l'opció 2, però aquí no posem explícitament el nom i password de la nostra xarxa, sino que ens servim de l'arxiu wpa_supplicant.conf. Pensar a canviar el valor XX de l'adreça IP.
 
-Després reiniciarem la Raspi:
+------------------------------------------------
+------------------------------------------------
+
+Una vegada modificada la configuració de la IP reiniciarem la Raspi:
 
 	sudo reboot now
 
-I una vegada hagi tornat a arrencar, comprovarem que ens ha assignat l'adreça que li hem dit amb ifconfig:
+I quan hagi tornat a arrencar, comprovarem que ens ha assignat l'adreça que li hem dit amb ifconfig:
 
 	ifcongif
 
