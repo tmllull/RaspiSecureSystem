@@ -163,6 +163,8 @@ En aquest moment ja ens podem desfer de la pantalla, teclat i ratolí, ja que to
 
 Ens demanarà la contrassenya que hem modificat al punt 1 (*Mentre s'escriu la contrassenya no es veurà res per pantalla.*) i ja estarem connectats a la Raspi.
 
+**Nota:** Si fem servir Windows, hi podrem accedir mitjançant l'aplicació PuTTY.
+
 ###3. Canviar el port SSH (opcional)
 
 Addicionalment podriem voler emprar un port SSH diferent de l'standart (per defecte és el 22). Això ens pot ser útil si volem accedir a la Raspi des de fora de casa i el port 22 ja està utilitzat, o per intentar tenir una mica més de seguretat evitant valors per defecte.
@@ -239,13 +241,43 @@ I posem el servei en marxa
 
 	sudo /usr/local/bin/noip2
 
-Amb això ja tenim configurat no-ip, pel que hauriem de poder accedir a la nostra raspi des de qualsevol lloc fora de la nostra xarxa local. No ho podrem provar sempre que estiguiem connectats a la propia xarxa, i per això ho podem provar des del mòbil (amb una aplicació com JuiceSSH, per Android), o demanant a algú que estigui en una altra xarxa que ens ho miri.
+Ens falta un darrer punt molt important, i que justifica la importància del punt 2. Per poder accedir des de fora de la xarxa, necessitem saber l'adreça pública (problema que hem solucionat amb no-ip), però també necessitem saber a quina adreça privada volem anar. Això se soluciona fent "port-forwarding" al router, i indicant que tot el que vingui des de fora que vulgui anar al port 22 (o el que haguem configurat si hem fet el punt 2), vagi a la nostra Raspi. Aquí veiem la importància de tenir una IP estàtica.
+
+Per aconseguir això necessitem accedir al router teclejant la seva adreça a qualsevol navegador, que normalment sol ser 192.168.1.1, i posem el nom d'usuari i contrassenya. Els nous routers de fibra òptica de Movistar només demanen una contrassenya que es troba abaix del router, i els més antics normalment tenen "admin" com a usuari, i "admin" o "1234" com a contrassenya (sense cometes). En cas que no vagi bé, s'haurien de cercar les credencials d'accés a Internet.
+
+Una vegada dins cerquem alguna opció que es digui "Ports" (depèn molt de cada fabricant), i creem una nova regla que indiqui el següent:
+
+	Port: 22 (o el que correspongui)
+	Tipus de protocol: TCP/UDP
+	Adreça destinació: 192.168.1.XX
+
+Aquesta és la informació rellevant, sent XX l'adreça que hem assignat en el punt 2. Potser ens demana també un nom, que li podem dir SSH.
+
+Amb això ja tenim configurat no-ip i el port 22 del router obert, pel que hauriem de poder accedir a la nostra raspi des de qualsevol lloc fora de la nostra xarxa local. No ho podrem provar sempre que estiguiem connectats a la propia xarxa, i per això ho podem provar des del mòbil (amb una aplicació com JuiceSSH, per Android) o demanant a algú que estigui en una altra xarxa que ens ho miri.
 
 Des del terminal (o PuTTY si estem utilitzant Windows) teclegem
 
-ssh pi@elmeudomini.ddns.net
+	ssh pi@elmeudomini.ddns.net
+
+Si ens demana contrassenya, vol dir que tot ha sortit bé, i ja podrem accedir a la nostra Raspi des de qualsevol banda (inclús des del mòbil).
 
 ###5. Obrir els ports del router
+
+En el punt anterior hem vist com obrir un port del nostre router, i aquí aprofitarem per obrir tots els que ens faci falta pels propers serveis. Així, una vegada dins del router, i com que ja sabem quins tipus de serveis farem servir, aprofitarem per obrir-los tots de cop i ens estalviem haver de fer-ho després un per un.
+
+En el nostre cas, a banda del port 22, obrirem els següents apuntant també a l'adreça de la nostra Raspi:
+
+	Ports: 80 (servidor web per defecte), 21 (servidor FTP per defecte)
+	Protocols: TCP/UDP
+	IP destí: 192.168.1.XX
+
+A més a més, ja que també farem servir una càmera IP, podem obrir el port que li correspondrà:
+
+	Port: 8081
+	Protocols: TCP/UDP
+	IP destí: 192.168.1.XY
+
+Canviarem XY per l'adreça que posteriorment li donarem a la nostra càmera, i així ja no haurem de tornar a configurar el router una vegada instal·lada.
 
 ###6. Instal·lar un servidor ftp
 
