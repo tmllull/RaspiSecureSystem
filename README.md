@@ -43,24 +43,30 @@ Una vegada tenim la targeta formatejada i NOOBS descomprimit, copiem tot el cont
 
 Per fer la instal·lació ens ajudarem d'una pantalla amb entrada HDMI, un teclat i un ratolí. Connectem tots els perifèrics a la Raspi i la connectem a la corrent. Després d'uns moments ens apareixerà una pantalla on ens demana quin sistema volem instal·lar. Seleccionem *Raspbian* i cliquem "Install". Aquest procés pot tardar entre 20 i 30 minuts.
 
-Quan la instal·lació hagi acabat, reiniciem el sistema i ja podrem arrencar Raspbian normalment. De moment encara mantenim tant la pantalla com teclat i ratolí, ja que ens queda fer algunes configuracions.
+Quan la instal·lació hagi acabat, reiniciem el sistema i ja podrem arrencar Raspbian normalment. De moment encara mantenim la pantalla, teclat i ratolí, ja que ens queda fer algunes configuracions.
 
-Des del menú d'aplicacions anirem a---------------------------------------------------------------------------------------------------------------------------------------
+Des del menú d'aplicacions anirem a Preferences --> Mouse and Keyboard Settings, i posarem el teclat en Espanyol (Català).
+
+A continuació anirem a Preferences --> Raspberry Pi Configuration, modificarem el **password**, i marcarem l'opció de **Boot** que diu *To CLI*. Això farà que quan arrenqui la Raspi no carregui l'entorn gràfic, ja que normalment no el farem servir i així tenim més recursos disponibles.
+
+En cas que volguem accedir a l'entorn gràfic (si tenim la Raspi conectada a una tele o pantalla, per exemple), ho podrem fer amb la comanda *startx*
+
+	startx
 
 ###2. Assignar IP estàtica
 
-Una part important i que dóna sentit a una Raspi és el fet de poder accedir a ella des de qualsevol lloc a través de terminal. Això ho podem fer sempre i quan sapiguem la seva adreça IP però, com sabem, aquesta pot anar canviant si el router que ens l'assigna (normalment per DHCP) es reinicia, o si apaguem la Raspi durant un temps i la tornem a connectar. Per evitar-ho li assignarem una IP estàtica i així ens asegurarem que sempre té la mateixa.
+Una part important i que dóna sentit a una Raspi és el fet de poder accedir a ella des de qualsevol lloc a través d'un terminal. Això ho podem fer sempre i quan sapiguem la seva adreça IP però, com sabem, aquesta pot canviar si el router es reinicia o si reiniciem la Raspi. Per evitar-ho li assignarem una IP estàtica i així ens asegurarem que sempre té la mateixa.
 
 Per fer això tenim varies opcions:
 
 ####Opció 1:
-Abans de res ens connectem a la nostra WiFi normalment, i d'aquesta manera ja tindrem regisrat el SSID i Password. A continuació obrim un terminal amb la combinació de tecles **Ctrl+Alt+t**. Podem fer-ho també des del menú d'aplicacions.
+Abans de res ens connectem a la nostra WiFi, d'aquesta manera ja tindrem regisrat el SSID i Password, i a continuació obrim un terminal amb la combinació de tecles **Ctrl+Alt+t**. Podem fer-ho també des del menú d'aplicacions.
 
 A continuació hem de modificar l'arxiu *dhcpcd.conf*
 	
 	sudo nano /etc/dhcpcd.conf
 
-Afegir al final el següent codi si volem fer la connexió per cable:
+Afegint al final el següent codi si volem fer la connexió per cable:
 
 	interface eth0
 
@@ -78,7 +84,7 @@ O aquest si la volem fer per WiFi:
 
 Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
 
-**NOTA**: Substituir el valor XX per l'adreça que vulguem, tenint en compte de posar un valor que estigui fora del rang DHCP. Normalment aquest rang comença a donar adreces a partir del 33 (tot i que pot variar), però dificilment comença per adreces més baixes. Això ens permet assignar sense cap problema adreces a partir de la 2. Igualment, hem de posar l'adreça del router i DNS que correspongui amb el nostre router. Normalment sol ser 192.168.1.1 en la majoria de routers, però assegureu-vos abans per si de cas.
+**NOTA:** Substituim el valor XX per l'adreça que vulguem, tenint en compte de posar un valor que estigui fora del rang DHCP. Normalment es comencen a donar adreces a partir del número 33 (tot i que pot variar), però dificilment comença per adreces baixes. Això ens permet assignar sense cap problema adreces a partir de la 2. Igualment, hem de posar l'adreça del router i DNS que correspongui amb el nostre router. Normalment sol ser 192.168.1.1 en els routers domèstics, però assegureu-vos abans per si de cas.
 
 ####Opció 2:
 
@@ -111,7 +117,7 @@ Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
 
 ####Opció 3:
 
-Ens queda encara una altra opció, que és fer servir l'arxiu wpa_supplicant.conf
+Ens queda encara una altra opció, que és fer servir l'arxiu *wpa_supplicant.conf*
 
 	sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
 
@@ -128,7 +134,7 @@ Ara anem a modificar l'arxiu interfaces
 
 	sudo nano /etc/network/interfaces
 
-I canviem la part de wlan0 pel següent, si farem servir la connexió WiFi:
+I canviem la part de wlan0 pel següent si farem servir la connexió WiFi:
 
 	allow-hotplug wlan0
 	iface wlan0 inet static
@@ -151,7 +157,7 @@ Després reiniciarem la Raspi:
 
 	sudo reboot now
 
-I una vegada hagi tornat arrencar, comprovarem que ens ha assignat l'adreça que li hem dit amb ifconfig:
+I una vegada hagi tornat a arrencar, comprovarem que ens ha assignat l'adreça que li hem dit amb ifconfig:
 
 	ifcongif
 
@@ -165,41 +171,45 @@ Ens demanarà la contrassenya que hem modificat al punt 1 (*Mentre s'escriu la c
 
 **Nota:** Si fem servir Windows, hi podrem accedir mitjançant l'aplicació PuTTY.
 
-###3. Canviar el port SSH (opcional)
+###3. Canviar el port SSH (Opcional)
 
 Addicionalment podriem voler emprar un port SSH diferent de l'standart (per defecte és el 22). Això ens pot ser útil si volem accedir a la Raspi des de fora de casa i el port 22 ja està utilitzat, o per intentar tenir una mica més de seguretat evitant valors per defecte.
 
-Per fer-ho modifiquem l'arxiu sshd_config
+Per fer-ho modifiquem l'arxiu *sshd_config*
 
 	sudo nano /etc/ssh/sshd_config
 
-Busquem la linia on indica el port, i el canviem pel que ens interessi, ja sigui modificant la linia en qüestió o comentant aquesta i afegint una nova
+Busquem la linia on indica el port i el canviem pel que ens interessi, ja sigui modificant la linia en qüestió o comentant aquesta i afegint una nova
 
 	#port 22
-	port 2214
+	port 2234
 
-I reiniciem el servidor ssh
+Per comoditat, lo més pràctic és afegir 2 valors més al 22 inicial, així ens serà més fàcil d'associar el port a SSH, per exemple 2234, però podem posar el que vulguem (sempre i quan no estigui ja utilitzat)
+
+Finalment reiniciem el servidor ssh
 
 	sudo service ssh restart
 
 Una vegada fet el canvi, la manera d'accedir a la Raspi per terminal serà
 
-	ssh -p 2214 pi@192.168.1.XX
+	ssh -p 2234 pi@192.168.1.XX
 
 Sent XX l'adreça que li haurem donat a la Raspi en el punt 2.
 
 
 ###4. Instal·lar i configurar no-ip
 
-De la mateixa manera que les direccions IP locals poden canviar, també ho fan les direccions IP públiques, pel que potser que ara en tiguem una, i demà una altra. Això és un problems si intentem accedir a la Raspi des de fora de la xarxa local, ja que no sabrem quina direcció tenim assignada. Per evitar aquest problema, ens ajudarem del servei no-ip.
+De la mateixa manera que les direccions IP locals poden canviar, també ho fan les direccions IP públiques, pel que potser que ara en tiguem una i demà una altra. Això és un problems si intentem accedir a la Raspi des de fora de la xarxa local, ja que no sabrem quina direcció tenim assignada. Per evitar aquest problema ens ajudarem del servei no-ip.
 
-No-ip és un servidor DNS que el que fa és traduir una direcció web (http://www.google.com) a la seva IP pública (http://74.125.224.72, per exemple). Així, el que farem ara serà accedir a noip.com, crear un compte (gratuit) i registrar un domini, per exemple elmeudomini.ddns.net.
+No-ip és un servidor DNS que el que fa és traduir una direcció web (http://www.google.com) a la seva IP pública (http://74.125.224.72, per exemple). Així, el que farem ara serà accedir a noip.com, crear un compte (gratuit) i registrar un domini, per exemple *elmeudomini.ddns.net*.
 
-Quan ja tenim el nostre domini registrat, toca instal·lar el client a la Raspi. Accedim a la Raspi per ssh amb la següent comanda:
+Quan ja tenim el nostre domini registrat, toca instal·lar el client a la Raspi. 
+
+Hi accedim per ssh amb:
 
 	ssh pi@192.168.1.XX
 
-Abans ens assegurarem de tenir el sistema actualitzat, pel que farem un update i un upgrade:
+Abans ens assegurarem de tenir el sistema actualitzat, pel que farem un update i un upgrade. Això pot tardar fins a 20 o 30 minuts, depenent del que s'hagi d'actualitzar.
 
 	sudo apt-get update && sudo apt-get upgrade
 
@@ -213,13 +223,16 @@ El descomprimim
 
 	tar -zxvf noip-duc-linux.tar.gz
 
-Accedim a la carpeta que s'ha creat i l'instal·lem
+Accedim a la carpeta que s'ha creat
 
 	cd noip-2.1.9-1
+
+I l'instal·lem
+
 	sudo make
 	sudo make install
 
-En aquest punt ens demanarà el nom d'usuari i la contrassenya del nostre compte de no-ip, i degut a que només tindrem un domini registrat, agafarà aquest per defecte. El temps de refresc el podem deixar per defecte, i a la següent pregunta, respondrem que no (n).
+En aquest punt ens demanarà el nom d'usuari i la contrassenya del nostre compte de no-ip, i degut a que només tindrem un domini registrat, agafarà aquest per defecte. El temps de refresc el podem deixar per defecte, i a la següent pregunta, respondrem que NO (n).
 
 Ara creem un nou fitxer que li direm noip2
 
@@ -233,7 +246,7 @@ Guardem el fitxer amb Ctrl+x --> y --> enter, i li donem permissos d'execució
 
 	sudo chmod +x /etc/init.d/noip2
 
-Actualitzem el fitxer d'inici perquè arranqui cada vegada que engeguem la Raspi
+Actualitzem el fitxer d'inici perquè arrenqui cada vegada que engeguem la Raspi
 
 	sudo update-rc.d noip2 defaults
 
@@ -241,7 +254,7 @@ I posem el servei en marxa
 
 	sudo /usr/local/bin/noip2
 
-Ens falta un darrer punt molt important, i que justifica la importància del punt 2. Per poder accedir des de fora de la xarxa, necessitem saber l'adreça pública (problema que hem solucionat amb no-ip), però també necessitem saber a quina adreça privada volem anar. Això se soluciona fent "port-forwarding" al router, i indicant que tot el que vingui des de fora que vulgui anar al port 22 (o el que haguem configurat si hem fet el punt 2), vagi a la nostra Raspi. Aquí veiem la importància de tenir una IP estàtica.
+Ens falta un darrer punt molt important, i que justifica la importància del punt 2. Per poder accedir des de fora de la xarxa, necessitem saber l'adreça pública (problema que hem solucionat amb no-ip), però també necessitem saber a quina adreça privada volem anar. Això se soluciona fent "port-forwarding" al router i indicant que tot el que vingui des de fora que vulgui anar al port 22 (o el que haguem configurat si hem fet el punt 2), vagi a la nostra Raspi. Aquí veiem la importància de tenir una IP estàtica.
 
 Per aconseguir això necessitem accedir al router teclejant la seva adreça a qualsevol navegador, que normalment sol ser 192.168.1.1, i posem el nom d'usuari i contrassenya. Els nous routers de fibra òptica de Movistar només demanen una contrassenya que es troba abaix del router, i els més antics normalment tenen "admin" com a usuari, i "admin" o "1234" com a contrassenya (sense cometes). En cas que no vagi bé, s'haurien de cercar les credencials d'accés a Internet.
 
@@ -251,13 +264,16 @@ Una vegada dins cerquem alguna opció que es digui "Ports" (depèn molt de cada 
 	Tipus de protocol: TCP/UDP
 	Adreça destinació: 192.168.1.XX
 
-Aquesta és la informació rellevant, sent XX l'adreça que hem assignat en el punt 2. Potser ens demana també un nom, que li podem dir SSH.
+Aquesta és la informació rellevant, sent XX l'adreça que hem assignat en el punt 2. Potser ens demana també un nom, que li podem posar SSH, per exemple.
 
-Amb això ja tenim configurat no-ip i el port 22 del router obert, pel que hauriem de poder accedir a la nostra raspi des de qualsevol lloc fora de la nostra xarxa local. No ho podrem provar sempre que estiguiem connectats a la propia xarxa, i per això ho podem provar des del mòbil (amb una aplicació com JuiceSSH, per Android) o demanant a algú que estigui en una altra xarxa que ens ho miri.
+Amb això ja tenim configurat no-ip i el port 22 del router obert, pel que hauriem de poder accedir a la nostra raspi des de qualsevol lloc fora de la nostra xarxa local. No ho podrem provar sempre que estiguiem connectats a la pròpia xarxa, però ho podem provar des del mòbil (amb una aplicació com JuiceSSH per Android) o demanant a algú que estigui en una altra xarxa que ens ho miri.
 
 Des del terminal (o PuTTY si estem utilitzant Windows) teclegem
 
 	ssh pi@elmeudomini.ddns.net
+O si hem canviat el port ssh
+
+	ssh -p 2234 pi@elmeudomini.ddns.net
 
 Si ens demana contrassenya, vol dir que tot ha sortit bé, i ja podrem accedir a la nostra Raspi des de qualsevol banda (inclús des del mòbil).
 
