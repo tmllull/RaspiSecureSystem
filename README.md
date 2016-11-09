@@ -331,6 +331,6 @@ O fent servir el nostre domini de no-ip, i que gràcies a la Raspi sempre estar�
 
 	http://elmeudomini.ddns.net:8081
 
-Amb això accedim al menú de la pròpia càmera i podrem realitzar les configuracions pertinents en cas de ser necessari, però com hem dit abans, no serà aquesta la forma en que agafarem les fotos, sino que ens servirem de les peticions per http que ens ofereix, i que podem consultar als [foros de Dlikn](). Si es fa servir una càmera diferent, s'haura de consultar el manual d'usuari i les comandes necessaries per configurar la càmera i addecir a ella.
+Amb això accedim al menú de la pròpia càmera i podrem realitzar les configuracions pertinents en cas de ser necessari, però com hem dit abans, no serà aquesta la forma en que agafarem les fotos, sino que ens servirem de les peticions per http que ens ofereix, i que podem consultar als [foros de Dlikn](http://forums.dlink.com/index.php?topic=59172.0). Si es fa servir una càmera diferent, s'haura de consultar el manual d'usuari i les comandes necessaries per configurar la càmera i addecir a ella.
 
 ## Arduino
