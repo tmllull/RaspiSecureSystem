@@ -294,7 +294,7 @@ En el nostre cas, a banda del port 22, obrirem els següents apuntant també a l
 
 A més a més, ja que també farem servir una càmera IP, podem obrir el port que li correspondrà:
 
-	Port: 8081
+	Port: 8081 (per exemple)
 	Protocols: TCP/UDP
 	IP destí: 192.168.1.XY
 
@@ -305,3 +305,32 @@ Canviarem XY per l'adreça que posteriorment li donarem a la nostra càmera, i a
 ###7. Instal·lar un servidor WEB
 
 ###8. Configurar notificacions amb l'API de Pushover
+
+## Càmera IP
+En quant a la càmera, normalment tenen de per si una interficie web a la qual podem accedir i amb la que podem configurar ja algunes opcions, però en el nostre cas ens interessa dependre lo mínim possible d'aquest sistema i interactuar directament amb ella a través de la seva IP. 
+
+Això ens dóna la llibertat de poder crear la nostra pròpia web o aplicació mòbil i accedir a la imatge de la càmera, o fer captures gràcies als sensors que muntarem a l'Arduino.
+
+Segons les instruccions del fabricant, les càmeres IP tenen una adreça establerta a la qual s'hi pot accedir des d'un navegador si la connectem a un ordinador per cable ethernet, i una vegada introduïts el nom d'usuari i contrassenya per defecte, ja estem dins del menú de la càmera.
+
+Des d'aquí, cada càmera té la seva interfície, però el que s'ha fet en aquest cas ha estat el següent:
+
+1. Assignar un port diferent del port 80 que ve per defecte, que serà el que hem obert al router abans, destinat a la càmera.
+2. Canviar la contrassenya d'accés
+3. Configurar la connexió FTP per comunicar-se amb la Raspi
+
+Pel que fa referència a la IP, com se pot imaginar també li hem d'assignar una IP estàtica, però en aquest cas hem optat per fer-ho des del router, utilitzant l'adreça mac de la càmera i que podem trobar dins del mateix menú de configuració.
+
+Accedim al router i anem a l'opció de control mac. Afegim la mac de la càmera i li assignem la mateixa IP que la que hem posat al obrir el port corresponent en el punt 5.
+
+Després d'això, ja no hi hauria d'haver problema en accedir a la càmera des de qualsevol navegador web, simplement posant l'adreça IP seguida de : i el port, si estem dins de la xarxa local
+
+	http://192.168.1.X:8081
+
+O fent servir el nostre domini de no-ip, i que gràcies a la Raspi sempre estarà actualitzat
+
+	http://elmeudomini.ddns.net:8081
+
+Amb això accedim al menú de la pròpia càmera i podrem realitzar les configuracions pertinents en cas de ser necessari, però com hem dit abans, no serà aquesta la forma en que agafarem les fotos, sino que ens servirem de les peticions per http que ens ofereix, i que podem consultar als [foros de Dlikn](). Si es fa servir una càmera diferent, s'haura de consultar el manual d'usuari i les comandes necessaries per configurar la càmera i addecir a ella.
+
+## Arduino
