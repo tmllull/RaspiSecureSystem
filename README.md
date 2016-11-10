@@ -27,8 +27,10 @@ Pel que fa referència a la Raspi, s'han seguit aquests pasos:
 4. Instal·lar i configurar no-ip
 5. Obrir els ports del router
 6. Instal·lar i configurar un servidor FTP (Opcional)
-7. Configurar notificacions amb l'API de Pushover
-8. Enviar notificacions quan algú fa login
+7. Instal·lar un servidor Web
+8. Instal·lar MySQL y phpMyAdmin
+9. Configurar notificacions amb l'API de Pushover
+10. Enviar notificacions quan algú fa login
 
 ### 1. Instal·lar i preparar el SO
 
@@ -259,7 +261,7 @@ I posem el servei en marxa
 
 	sudo /usr/local/bin/noip2
 
-Ens falta un darrer punt molt important, i que justifica la importància del punt 2. Per poder accedir des de fora de la xarxa, necessitem saber l'adreça pública (problema que hem solucionat amb no-ip), però també necessitem saber a quina adreça privada volem anar. Això se soluciona fent "port-forwarding" al router i indicant que tot el que vingui des de fora que vulgui anar al port 22 (o el que haguem configurat si hem fet el punt 2), vagi a la nostra Raspi. Aquí veiem la importància de tenir una IP estàtica.
+Ens falta un darrer punt molt important, i que justifica la importància del punt 2. Per poder accedir des de fora de la xarxa, necessitem saber l'adreça pública (problema que hem solucionat amb no-ip), però també necessitem saber a quina adreça privada volem anar. Això se soluciona fent "port-forwarding" al router i indicant que tot el que vingui des de fora que vulgui anar al port 22 (o el que haguem configurat si hem fet el punt 3), vagi a la nostra Raspi. Aquí veiem la importància de tenir una IP estàtica.
 
 Per aconseguir això necessitem accedir al router teclejant la seva adreça a qualsevol navegador, que normalment sol ser 192.168.1.1, i posem el nom d'usuari i contrassenya. Els nous routers de fibra òptica de Movistar només demanen una contrassenya que es troba abaix del router, i els més antics normalment tenen "admin" com a usuari, i "admin" o "1234" com a contrassenya (sense cometes). En cas que no vagi bé, s'haurien de cercar les credencials d'accés a Internet.
 
@@ -300,7 +302,7 @@ A més a més, ja que també farem servir una càmera IP, podem obrir el port qu
 
 Canviarem XY per l'adreça que posteriorment li donarem a la nostra càmera, i així ja no haurem de tornar a configurar el router una vegada instal·lada.
 
-###6. Instal·lar i condigurar un servidor FTP (Opcional)
+###6. Instal·lar i configurar un servidor FTP (Opcional)
 
 Un servidor ftp ens pot servir per agafar dades de la Raspi d'una forma senzilla. Per això, tot i que les captures i vídeo de la càmera es faran directament sobre la seva IP, inicialment vam fer servir el servidor ftp per enviar les fotos, pel que creiem convenient explicar el seu procés de configuració.
 
@@ -382,7 +384,141 @@ I per acabar, reiniciem el servidor
 
 ###7. Instal·lar un servidor WEB
 
-###8. Configurar notificacions amb l'API de Pushover
+De servidors web n'hi ha varis, i potser un dels més coneguts sigui Apache. Tot i que la Raspi no té problemes per treballar amb Apache, depen del seu proposit potser amb un de més lleuger com nginx o lighttph ja en tenim prou.
+
+Aquí es detalla la instal·lació d'Apache i nginx juntament amb php, i en el nostre cas degut a que utilitzem llibreries JSON per interactuar amb l'aplicació mòbil, ens hem quedat amb Apache.
+
+#### Apache
+La instal·lació d'Apache és relativament senzilla, però requereix d'alguns preparatius.
+
+Primer crearem un nou grup www-data
+
+	sudo addgroup www-data
+
+I li donarem els permisos necessaris
+
+	sudo usermod -a -G www-data www-data
+
+Ara, per instal·lar el servidor, ho farem amb
+
+	sudo apt-get install apache2 php5 libapache2-mod-php5
+
+Iniciem el servidor
+
+	sudo /etc/init.d/apache2 restart
+
+I provem que funciona accedint a la direcció IP de la Raspi si estem a la mateixa xarxa
+
+	http://IP_ADDRESS
+
+O al nom del domini que hem creat a no-ip si estem a una xarxa externa
+
+	http://elmeudomini.ddns.net
+
+Per provar php, creem el següent fitxer
+
+	sudo nano /var/www/html/info.php
+
+Amb el següent contingut
+
+	<?php
+      phpinfo();
+	?>
+
+I provem que funciona accedint a 
+
+	http://ID_ADDRESS/info.php
+
+#### Nginx
+Per instal·lar nginx, només hem de executar la comanda
+
+	sudo apt-get install nginx php5 libapache2-mod-php5
+
+Una vegada instal·lat, creem la carpeta /var/www/html en cas que no existeixi
+
+	sudo mkdir /var/www/html
+
+I modifiquem l'arxiu de configuració de nginx
+
+	sudo nano /etc/nginx/sites-available/default
+
+Deixant-lo de la següent manera
+
+	server {
+        listen 80;
+        server_name $domain_name;
+        root /var/www/html;
+        index index.html index.htm;
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
+	}
+
+Reiniciem el servidor
+
+	sudo service nginx restart
+
+I comprovem que funciona escrivint a qualsevol navegador l'adreça IP de la Raspi si estem connectats a la mateixa xarxa
+
+	http://IP_ADDRESS
+
+o el nom del nostre domini si estem a una xarxa diferent.
+
+	http://elmeudomini.ddns.net
+
+Per instal·lar php executem
+
+	sudo apt-get install php5 libapache2-mod-php5
+
+Obrim l'arxiu de configuració
+
+	sudo nano /etc/nginx/sites-available/default
+
+I el deixem de la següent manera
+
+	server {
+        listen 80;
+        server_name $domain_name;
+        root /var/www/html;
+        index index.html index.htm;
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
+ 
+        location ~\.php$ {
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+                fastcgi_split_path_info ^(.+\.php)(/.*)$;
+                fastcgi_index index.php;
+                fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+                fastcgi_param HTTPS off;
+                try_files $uri =404;
+                include fastcgi_params;
+        }
+	}
+
+Ara només ens falta reiniciar el servidor
+
+	sudo service nginx restart
+
+Crear un fitxer php
+
+	sudo nano /var/www/test.php
+
+Amb el següent codi de prova
+
+	<?php
+	phpinfo();
+	?>
+
+I provar que el php funciona correctament accedint a
+
+	http://IP_ADDRESS/test.php
+
+o des de fora de la xarxa
+
+	http://elmeudomini.ddns.net/test.php
+
+### 8. Instal·lar MySQL y phpMyAdmin
+
+### 9. Configurar notificacions amb l'API de Pushover
 
 Ja que les notificacions push natives en la nostra pròpia aplicació requereixen de certs passos una mica engorrosos (registrar l'app a Google, tenir compte de Google Developer, etc.), hem optat per servir-nos d'una aplicació que ens proporciona aquesta funcionalitat: Pushover.
 
@@ -421,7 +557,7 @@ Aquest seria l'script base per enviar notificacions des de la Raspi al nostre m�
 
 A partir d'aquí, ens podem crear tants scripts com vulguem per enviar notificacions depenent del que ens interessi. Inclús podem cridar aquest script des d'un altre script, si volem.
 
-### Enviar notificacions quan algú fa login
+### 10. Enviar notificacions quan es fa login
 
 Una funcionalitat interessant és la d'enviar una notificació quan algun usuari accedeix a la Raspi. Per això, aprofitant l'script anterior, hem creat el següent
 
@@ -443,7 +579,7 @@ I hem afegit el següent codi
 	fi
 	exit 0
 
-El que fa aquest codi és executar el curls només quan es fa login gràcies a la condició, ja que en principi no ens interessa saber quan es desconnecta. En cas que també ho vulguem saber, n'hi ha prou amb treure el condicional.
+El que fa aquest codi és executar el curl només quan es fa login gràcies a la condició, ja que en principi no ens interessa saber quan es desconnecta. En cas que també ho vulguem saber, n'hi ha prou amb treure el condicional.
 
 I li hem de donar també els permisos d'execució
 
@@ -487,7 +623,7 @@ En quant a la càmera, normalment tenen de per si una interficie web a la qual p
 
 Això ens dóna la llibertat de poder crear la nostra pròpia web o aplicació mòbil i accedir a la imatge de la càmera, o fer captures gràcies als sensors que muntarem a l'Arduino.
 
-Segons les instruccions del fabricant, les càmeres IP tenen una adreça establerta a la qual s'hi pot accedir des d'un navegador si la connectem a un ordinador per cable ethernet, i una vegada introduïts el nom d'usuari i contrassenya per defecte, ja estem dins del menú de la càmera.
+Tot i així, per configurar la càmera farem servir la pròpia interficie web, ja que al ser un entorn gràfic és més còmode. Segons les instruccions del fabricant, les càmeres IP tenen una adreça establerta a la qual s'hi pot accedir des d'un navegador si la connectem a un ordinador per cable ethernet, i una vegada introduïts el nom d'usuari i contrassenya per defecte, ja estem dins del menú de la càmera.
 
 Des d'aquí, cada càmera té la seva interfície, però el que s'ha fet en aquest cas ha estat el següent:
 
