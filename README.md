@@ -220,6 +220,10 @@ Abans ens assegurarem de tenir el sistema actualitzat, pel que farem un update i
 
 És recomanable fer aquest procés cada cert temps, ja que hi pot haver actualitzacions de seguretat del sistema o d'alguna altra aplicació.
 
+(Opcional) Ens desplacen a la carpeta /src
+
+	cd /usr/local/src
+
 A continuació descarreguem el client de no-ip
 
 	wget http://www.no-ip.com/client/linux/noip-duc-linux.tar.gz
@@ -237,7 +241,7 @@ I l'instal·lem
 	sudo make
 	sudo make install
 
-En aquest punt ens demanarà el nom d'usuari i la contrassenya del nostre compte de no-ip, i degut a que només tindrem un domini registrat, agafarà aquest per defecte. El temps de refresc el podem deixar per defecte, i a la següent pregunta, respondrem que NO (n).
+En aquest punt ens demanarà el nom d'usuari i la contrassenya del nostre compte de no-ip, i degut a que només tindrem un domini registrat, agafarà aquest per defecte. A continuació ens demana el temps de refresc; per defecte ve en 30 minuts, però el podem modificar si volem. A la següent pregunta, respondrem que NO (n).
 
 Ara creem un nou fitxer que li direm noip2
 
