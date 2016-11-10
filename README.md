@@ -1,4 +1,4 @@
-# RaspiSecureSystem (En procés)
+# RaspiSecureSystem
 Aquest és un projecte per a l'especialitat d'IT de la carrera de _Grau en Enginyeria Informàtica_ de la FIB, que consisteix en crear un petit sistema de seguretat utilitzant una Raspberry Pi (a partir d'ara, Raspi), una càmera IP, un Arduino i varis sensors.
 
 Aquest sistema ens permetrà veure què passa a la nostra casa o habitació des d'una pàgina web, i gràcies a un sensor de movient podrem fer que la càmera faci una foto i ens l'envii per correu o ens avisi amb una notificació al mòbil.
@@ -25,10 +25,10 @@ Pel que fa referència a la Raspi, s'han seguit aquests pasos:
 2. Assignar una IP estàtica
 3. Canviar el port SSH (Opcional)
 4. Instal·lar i configurar no-ip
-5. -
-6. -
-7. -
-8. -
+5. Obrir els ports del router
+6. Instal·lar i configurar un servidor FTP (Opcional)
+7. Configurar notificacions amb l'API de Pushover
+8. Enviar notificacions quan algú fa login
 
 ### 1. Instal·lar i preparar el SO
 
@@ -220,10 +220,6 @@ Abans ens assegurarem de tenir el sistema actualitzat, pel que farem un update i
 
 És recomanable fer aquest procés cada cert temps, ja que hi pot haver actualitzacions de seguretat del sistema o d'alguna altra aplicació.
 
-(Opcional) Ens desplacen a la carpeta /src
-
-	cd /usr/local/src
-
 A continuació descarreguem el client de no-ip
 
 	wget http://www.no-ip.com/client/linux/noip-duc-linux.tar.gz
@@ -241,7 +237,7 @@ I l'instal·lem
 	sudo make
 	sudo make install
 
-En aquest punt ens demanarà el nom d'usuari i la contrassenya del nostre compte de no-ip, i degut a que només tindrem un domini registrat, agafarà aquest per defecte. A continuació ens demana el temps de refresc; per defecte ve en 30 minuts, però el podem modificar si volem. A la següent pregunta, respondrem que NO (n).
+En aquest punt ens demanarà el nom d'usuari i la contrassenya del nostre compte de no-ip, i degut a que només tindrem un domini registrat, agafarà aquest per defecte. El temps de refresc el podem deixar per defecte, i a la següent pregunta, respondrem que NO (n).
 
 Ara creem un nou fitxer que li direm noip2
 
@@ -304,11 +300,187 @@ A més a més, ja que també farem servir una càmera IP, podem obrir el port qu
 
 Canviarem XY per l'adreça que posteriorment li donarem a la nostra càmera, i així ja no haurem de tornar a configurar el router una vegada instal·lada.
 
-###6. Instal·lar un servidor ftp
+###6. Instal·lar i condigurar un servidor FTP (Opcional)
+
+Un servidor ftp ens pot servir per agafar dades de la Raspi d'una forma senzilla. Per això, tot i que les captures i vídeo de la càmera es faran directament sobre la seva IP, inicialment vam fer servir el servidor ftp per enviar les fotos, pel que creiem convenient explicar el seu procés de configuració.
+
+Farem servir el servidor vsftpd, pel que procedim a la seva instal·lació
+
+	sudo apt-get install vsftpd
+
+I un cop instal·lat, obrim l'arxiu de configuració per realitzar alguns canvis
+
+	sudo nano /etc/vsftpd.conf
+
+Modificarem les linies que es mostren a continuació:
+
+	anonymous_enable=NO
+	....
+	local_enable=YES
+	...
+	write_enable=YES
+	...
+
+Amb això permetrem poder interactuar amb els arxius, i no permetem l'accés anònim.
+
+Tot i així, si no fem cap més modificació, tots els usuaris podrien accedir a tots els arxius. Si volem restringir només l'accés a les carpetes de cada usuari, modifiquem la següent linia:
+
+	chroot_local_user=YES
+
+####Connexió per SSL (Opcional)
+
+Si volem afegir un certificat SSL a la nostra conexió, realitzarem els següents passos.
+
+Primer creem el certificat amb la següent comanda:
+
+	sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
+
+Això ens crea varis arxius, la ruta dels quals haurem d'afegir al fitxer de configuració del servidor. Per tant, el tornem a obrir
+
+	sudo nano /etc/vsftpd.conf
+
+I al final de l'arxiu cerquem la línia que habilita l'accés per ssl i la descomentem. Afegim també, si cal, les rutes dels certificats
+
+	rsa_cert_file=/etc/ssl/private/vsftpd.pem
+	rsa_private_key_file=/etc/ssl/private/vsftpd.pem
+	ssl_enable=YES
+
+I afegim les següents linies al final del fitxer
+
+	allow_anon_ssl=NO
+	force_local_data_ssl=YES
+	force_local_logins_ssl=YES
+	
+	ssl_tlsv1=YES
+	ssl_sslv2=NO
+	ssl_sslv3=NO
+	
+	require_ssl_reuse=NO
+	ssl_ciphers=HIGH
+
+Un cop hem guardat l'arxiu (Ctrl+x --> y --> enter), ens queda reiniciar el servidor:
+
+	sudo service vsftpd restart
+
+####Canviar el port ftp (Opcional)
+
+Igual que hem fet amb el port ssh, podem tenir la necessitat de modificar el port ftp. Per això, obrim el fitxer de configuració
+
+	sudo nano /etc/vsftpd.conf
+
+I realitzaem els següents canvis a les linies corresponents
+
+	#connect_from_port_20=YES
+	ftp_data_port=2121
+	listen_port=2121
+
+Aquí, com amb ssh, podem posar el port que vulguem sempre i quan estigui disponible, però la millor opció és mantenir el 21 inicial (per fer referència a ftp), i afegim dos digits més. 
+
+I per acabar, reiniciem el servidor
+
+	sudo service vsftpd restart
 
 ###7. Instal·lar un servidor WEB
 
 ###8. Configurar notificacions amb l'API de Pushover
+
+Ja que les notificacions push natives en la nostra pròpia aplicació requereixen de certs passos una mica engorrosos (registrar l'app a Google, tenir compte de Google Developer, etc.), hem optat per servir-nos d'una aplicació que ens proporciona aquesta funcionalitat: Pushover.
+
+El que necessitem primer de tot és crear un compte a la web de Pushover (la qual cosa ens generarà una clau única d'usuari) i posteriorment crearem una "aplicació" (que no és més que generar un Token per fer servir juntament amb l'API de Pushover). Posteriorment baixarem l'app de Pushover de Google Play o Apple Store.
+
+Una vegada tenim la nostra clau d'usuari, el token de la nostra aplicació i l'aplicació mòbil instal·lada, anem a la Raspi i creem un nou arxiu que li direm, per exemple, notificacions.sh.
+
+Una recomanació és crear una carpeta al nostre home on guardar els nostres scripts, així ho tenim tot més ordenat.
+
+	mkdir scripts
+	cd scripts
+	sudo nano notificacions.sh
+
+I dins d'aquest fitxer copiem el següent codi:
+
+	#!/bin/bash
+
+	MSG="message=Escriure aquí el missatge desitjat"
+
+	curl -s \
+	        --form-string "token=APPTOKEN" \
+	        --form-string "user=USERTOKEN" \
+	        --form-string "$MSG" \
+	        https://api.pushover.net/1/messages.json
+	exit 0
+
+Aquí haurem de substituir APPTOKEN i USERTOKEN pel token de la nostra app i la clau d'usuari, respectivament.
+
+I finalment li hem de donar permisos d'execució
+
+	sudo chmod +x notificacions.sh
+
+Aquest seria l'script base per enviar notificacions des de la Raspi al nostre mòbil, i ho podem provar simplement executant l'script
+
+	./notificacions.sh
+
+A partir d'aquí, ens podem crear tants scripts com vulguem per enviar notificacions depenent del que ens interessi. Inclús podem cridar aquest script des d'un altre script, si volem.
+
+### Enviar notificacions quan algú fa login
+
+Una funcionalitat interessant és la d'enviar una notificació quan algun usuari accedeix a la Raspi. Per això, aprofitant l'script anterior, hem creat el següent
+
+	sudo nano loginNotification.sh
+
+I hem afegit el següent codi
+
+	#!/bin/bash
+
+	#Using PAM
+	MSG="message=Login from user $PAM_USER"
+	
+	if [ "$PAM_TYPE" != "close_session" ]; then
+	curl -s \
+	        --form-string "token=APPTOKEN" \
+	        --form-string "user=USERTOKEN" \
+	        --form-string "$MSG" \
+	        https://api.pushover.net/1/messages.json
+	fi
+	exit 0
+
+El que fa aquest codi és executar el curls només quan es fa login gràcies a la condició, ja que en principi no ens interessa saber quan es desconnecta. En cas que també ho vulguem saber, n'hi ha prou amb treure el condicional.
+
+I li hem de donar també els permisos d'execució
+
+	sudo chmod +x loginNotification.sh
+
+Per fer que aquest script funcioni, ens queda modificar un arxiu, i és **important fer-ho amb cura ja que un error ens pot bloquejar l'accés a la Raspi**. 
+
+Obrim el següent fitxer
+
+	sudo nano /etc/pam.d/sshd
+
+Busquem la part de codi següent, i afegim les linies corresponents al nostre script, tenint cura de no modificar la resta de codi
+
+	.............
+	# SELinux needs to be the first session rule.  This ensures that any
+	# lingering context has been cleared.  Without this it is possible that a
+	# module could execute code in the wrong domain.
+	session [success=ok ignore=ignore module_unknown=ignore default=bad]        pam_selinux.so close
+	
+	# El meu script
+	session required pam_exec.so seteuid /home/pi/scripts/loginNotification.sh
+	# Fi del meu script
+
+	# Set the loginuid process attribute.
+	session    required     pam_loginuid.so
+	
+	# Create a new session keyring.
+	session    optional     pam_keyinit.so force revoke
+	............
+
+Guardem el fitxer amb Ctrl+x --> y -- enter.
+
+Ara, per provar que tot ha sortit bé, obrirem un nou terminal amb Ctrl+alt+t, i provarem a fer login amb el nostre usuari
+
+	ssh pi@192.168.1.XX
+
+Si després d'introduir la contrassenya aconseguim entrar, és que tot ha sortit com esperàvem. En cas que una vegada introduïda la contrassenya ens tregui fora de la sessió, hem de revisar el que hem fet i buscar algun error. Per això és important fer aquesta prova des d'un altre terminal, ja que si hem fet alguna cosa malament, i sortim de la sessió actual no podriem tornar a accedir a la Raspi.
 
 ## Càmera IP
 En quant a la càmera, normalment tenen de per si una interficie web a la qual podem accedir i amb la que podem configurar ja algunes opcions, però en el nostre cas ens interessa dependre lo mínim possible d'aquest sistema i interactuar directament amb ella a través de la seva IP. 
