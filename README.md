@@ -22,12 +22,17 @@ A continuació es detalles els passos que s'han seguit per tal de poder congifur
 Pel que fa referència a la Raspi, s'han seguit aquests pasos:
 
 1. Instal·lar i preparar el SO
-2. Assignar una IP estàtica
+2. Assignar una IP estàtica (3 opcions)
+	1. dhcpcd.conf
+	2. interfaces
+	3. interfaces + wpa_supplicant.conf
 3. Canviar el port SSH (Opcional)
 4. Instal·lar i configurar no-ip
 5. Obrir els ports del router
 6. Instal·lar i configurar un servidor FTP (Opcional)
-7. Instal·lar un servidor Web
+7. Instal·lar un servidor Web (2 opcions)
+	1. Apache
+	2. nginx
 8. Instal·lar MySQL y phpMyAdmin
 9. Configurar notificacions amb l'API de Pushover
 10. Enviar notificacions quan algú fa login
@@ -63,7 +68,7 @@ Una part important i que dóna sentit a una Raspi és el fet de poder accedir a 
 
 Per fer això tenim varies opcions:
 
-####Opció 1 (la més senzilla):
+#### 2.1 dhcpcd.conf (l'opció més senzilla):
 Abans de res ens connectem a la nostra WiFi, d'aquesta manera ja tindrem regisrat el SSID i Password, i a continuació obrim un terminal amb la combinació de tecles **Ctrl+Alt+t**. Podem fer-ho també des del menú d'aplicacions.
 
 A continuació hem de modificar l'arxiu *dhcpcd.conf*
@@ -90,7 +95,7 @@ Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
 
 **NOTA:** Substituim el valor XX per l'adreça que vulguem, tenint en compte de posar un valor que estigui fora del rang DHCP. Normalment es comencen a donar adreces a partir del número 33 (tot i que pot variar), però dificilment comença per adreces baixes. Això ens permet assignar sense cap problema adreces a partir de la 2 o la 3. Igualment, hem de posar l'adreça del router i DNS que correspongui amb el nostre router, i normalment sol ser 192.168.1.1 en els routers domèstics, però assegureu-vos abans per si de cas.
 
-####Opció 2 (modificant l'arxiu interfaces):
+#### 2.2 interfaces:
 
 Una altra opció és modificar directament l'arxiu interfaces
 
@@ -119,7 +124,7 @@ O les dades de eth0 si ens connectarem per cable:
 
 Sortim amb *Ctrl+x*, acceptem els canvis amb *y*, i premem *enter*.
 
-####Opció 3 (modificant els arxius interfaces i wpa_supplicant):
+#### 2.3 interfaces + wpa_supplicant.conf:
 
 Ens queda encara una alternativa, que és fer servir l'arxiu *wpa_supplicant.conf*
 
