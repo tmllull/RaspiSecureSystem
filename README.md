@@ -670,30 +670,38 @@ Ara, per provar que tot ha sortit bé, obrirem un nou terminal amb Ctrl+alt+t, i
 Si després d'introduir la contrassenya aconseguim entrar, és que tot ha sortit com esperàvem. En cas que una vegada introduïda la contrassenya ens tregui fora de la sessió, hem de revisar el que hem fet i buscar algun error. Per això és important fer aquesta prova des d'un altre terminal, ja que si hem fet alguna cosa malament, i sortim de la sessió actual no podriem tornar a accedir a la Raspi.
 
 ## Càmera IP
-En quant a la càmera, normalment tenen de per si una interficie web a la qual podem accedir i amb la que podem configurar ja algunes opcions, però en el nostre cas ens interessa dependre lo mínim possible d'aquest sistema i interactuar directament amb ella a través de la seva IP. 
+En quant a la càmera IP, normalment tenen de per sí una interficie web amb la que podem configurar ja algunes opcions, però en el nostre cas ens interessa dependre lo mínim possible d'aquest sistema i interactuar directament amb ella a través de la seva IP. 
 
-Això ens dóna la llibertat de poder crear la nostra pròpia web o aplicació mòbil i accedir a la imatge de la càmera, o fer captures gràcies als sensors que muntarem a l'Arduino.
+Això ens dóna la llibertat de poder crear la nostra pròpia web o aplicació mòbil i accedir a la imatge de la càmera o fer captures gràcies als sensors que muntarem a l'Arduino. Tot i així, per configurar la càmera farem servir la pròpia interficie web, ja que al ser un entorn gràfic és més còmode. 
 
-Tot i així, per configurar la càmera farem servir la pròpia interficie web, ja que al ser un entorn gràfic és més còmode. Segons les instruccions del fabricant, les càmeres IP tenen una adreça establerta a la qual s'hi pot accedir des d'un navegador si la connectem a un ordinador per cable ethernet, i una vegada introduïts el nom d'usuari i contrassenya per defecte, ja estem dins del menú de la càmera.
-
-Des d'aquí, cada càmera té la seva interfície, però el que s'ha fet en aquest cas ha estat el següent:
+Segons les instruccions del fabricant, les càmeres IP tenen una adreça establerta a la qual s'hi pot accedir des d'un navegador si la connectem a un ordinador per cable ethernet, pel que la configuració inicial la farem des d'un ordinador. Una vegada sabem quina adreça té, i després d'haver introduït el nom d'usuari i contrassenya per defecte, farem les següents configuracions: 
 
 1. Assignar un port diferent del port 80 que ve per defecte, que serà el que hem obert al router abans, destinat a la càmera.
 2. Canviar la contrassenya d'accés
-3. Configurar la connexió FTP per comunicar-se amb la Raspi
+3. Configurar la connexió FTP per comunicar-se amb la Raspi (Opcional)
+4. Anotar l'adreça MAC
+5. Configurar la connexió WiFi afegint el SSID i contrassenya de la nostra xarxa
 
-Pel que fa referència a la IP, com se pot imaginar també li hem d'assignar una IP estàtica, però en aquest cas hem optat per fer-ho des del router, utilitzant l'adreça mac de la càmera i que podem trobar dins del mateix menú de configuració.
+**Nota:** Cada càmera té la seva interfície, pel que on està cada opció pot variar.
 
-Accedim al router i anem a l'opció de control mac. Afegim la mac de la càmera i li assignem la mateixa IP que la que hem posat al obrir el port corresponent en el punt 5.
+Pel que fa referència a la IP, com podem imaginar també li hem d'assignar una IP estàtica, però en aquest cas hem optat per fer-ho des del router utilitzant l'adreça mac de la càmera, ja que no podem editar cap fitxer (o no tan fàcilment) com sí podiem fer amb la Raspi.
 
-Després d'això, ja no hi hauria d'haver problema en accedir a la càmera des de qualsevol navegador web, simplement posant l'adreça IP seguida de : i el port, si estem dins de la xarxa local
+Accedim al router i anem a l'opció de control MAC (novament, cada router és diferent). Afegim la MAC de la càmera i li assignem la mateixa IP que hem posat al obrir el port corresponent en el punt 5.
 
-	http://192.168.1.X:8081
+Després d'això, ja podem desconnectar la càmera de l'ordinador, apagar-la i tornar-la a encendre. Si tot ha sortit com esperavem, no hi hauria d'haver problema en accedir a la càmera des de qualsevol navegador web, simplement posant l'adreça IP seguida de : i el port, si estem dins de la xarxa local
+
+	http://192.168.1.XY:8081
 
 O fent servir el nostre domini de no-ip, i que gràcies a la Raspi sempre estarà actualitzat
 
 	http://elmeudomini.ddns.net:8081
 
-Amb això accedim al menú de la pròpia càmera i podrem realitzar les configuracions pertinents en cas de ser necessari, però com hem dit abans, no serà aquesta la forma en que agafarem les fotos, sino que ens servirem de les peticions per http que ens ofereix, i que podem consultar als [foros de Dlikn](http://forums.dlink.com/index.php?topic=59172.0). Si es fa servir una càmera diferent, s'haura de consultar el manual d'usuari i les comandes necessaries per configurar la càmera i addecir a ella.
+Amb això accedim al menú de la pròpia càmera i podrem realitzar les configuracions pertinents en cas de ser necessari, però com hem dit abans, no serà aquesta la forma en que agafarem les fotos, sino que ens servirem de les peticions per http que ens ofereix (i que podem consultar als [foros de Dlikn](http://forums.dlink.com/index.php?topic=59172.0)). Si es fa servir una càmera diferent, s'haura de consultar el manual d'usuari i les comandes necessaries per configurar la càmera i addecir a ella.
+
+Ja podem col·locar la càmera on vulguem, sempre que estigui dins de la cobertura WiFi.
 
 ## Arduino
+
+## Aplicació mòbil
+
+De l'aplicació mòbil no en parlarem, ja que podem trobar el codi a la carpeta "App" del repositori, que es podrà baixar, consultar i provar.
