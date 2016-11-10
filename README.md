@@ -406,7 +406,7 @@ I li donarem els permisos necessaris
 
 Ara, per instal·lar el servidor, ho farem amb
 
-	sudo apt-get install apache2 php5 libapache2-mod-php5
+	sudo apt-get install apache2 apache2-utils php5 libapache2-mod-php5
 
 Iniciem el servidor
 
@@ -523,9 +523,55 @@ o des de fora de la xarxa
 
 ### 8. Instal·lar MySQL y phpMyAdmin
 
-### 9. Configurar notificacions amb l'API de Pushover
+Instal·lem els arxius de MySQL
 
-Ja que les notificacions push natives en la nostra pròpia aplicació requereixen de certs passos una mica engorrosos (registrar l'app a Google, tenir compte de Google Developer, etc.), hem optat per servir-nos d'una aplicació que ens proporciona aquesta funcionalitat: Pushover.
+	sudo apt-get install mysql-server mysql-client php5-mysql
+
+Durant l'instal·lació ens demanarà certa informació, que anirem emplenant.
+
+Una vegada acabada la instal·lació, reiniciem el servei amb
+
+	sudo service mysql start
+
+I provem si funciona
+
+	mysql -u root -p
+
+Introduïm el password que hem escollit durant la instal·lació, i si carrega correctament la instal·lació ha sortit bé.
+
+Premem Ctrl+c per sortir.
+
+Per instal·lar phpMyAdmin fem
+
+	sudo apt-get install libapache2-mod-auth-mysql php5-mysql phpmyadmin
+
+Durant aquesta instal·lació li direm quin servidor fem anar, quan ens demani si volem fer servir MySQL li direm que sí, i posarem una contrassenya per phpMyAdmin.
+
+A continuació obrirem el següent fitxer
+
+	sudo nano /etc/php5/apache2/php.ini
+
+I afegirem la següent linia al principi del fitxer
+
+	extension=mysql.so
+
+Després executem la següent comanda
+
+	sudo ln -s /etc/phpmyadmin/apache.conf /etc/apache2/conf.d/phpmyadmin.conf
+
+I reiniciem el servidor
+
+	sudo /etc/init.d/apache2 reload
+
+Provem a veure si podem accedir a phpMyAdmin amb
+
+	http://IP_ADDRESS/phpmyadmin
+
+**Nota:** Tots els fitxers html, php, etc. que farem servir es troben a la carpeta "web" del repositori.
+
+### 9. Configurar notificacions Push amb l'API de Pushover
+
+Ja que les notificacions push natives en la nostra pròpia aplicació requereixen de certs passos una mica farragosos (registrar l'app a Google, tenir compte de Google Developer, etc.), hem optat per servir-nos d'una aplicació que ens proporciona aquesta funcionalitat: Pushover.
 
 El que necessitem primer de tot és crear un compte a la web de Pushover (la qual cosa ens generarà una clau única d'usuari) i posteriorment crearem una "aplicació" (que no és més que generar un Token per fer servir juntament amb l'API de Pushover). Posteriorment baixarem l'app de Pushover de Google Play o Apple Store.
 
