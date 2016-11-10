@@ -19,7 +19,7 @@ Els materials que s'han fet servir han estat:
 A continuació es detalles els passos que s'han seguit per tal de poder congifurar-ho tot.
 
 ## Raspberry Pi
-Pel que fa referència a la Raspi, s'han seguit aquests pasos:
+La Raspi és el nucli del nostre sistema, pel que és la que més treball requereix de configuració. Els passos que s'han seguit són:
 
 1. Instal·lar i preparar el SO
 2. Assignar una IP estàtica (3 opcions)
@@ -39,7 +39,7 @@ Pel que fa referència a la Raspi, s'han seguit aquests pasos:
 
 ### 1. Instal·lar i preparar el SO
 
-El SO escollit per aquest projecte ha estat ***Raspbian*** versió *"Pixel"*, una distribució Linux basada en Debian-Jessie i adaptada pel chip ARM de la Raspi. Per instal·lar el SO ens hem servit de l'eina que ens proporciona la comunitat de Raspberry, anomenada *NOOBS*, el que ens permet instal·lar el sistema d'una forma senzilla, o de la forma que més ens agradi.
+El SO escollit per aquest projecte ha estat ***Raspbian*** versió *"Pixel"*, una distribució Linux basada en Debian-Jessie i adaptada pel chip ARM de la Raspi. Per instal·lar el SO ens hem servit de l'eina que ens proporciona la comunitat de Raspberry, anomenada *NOOBS*, el que ens permet instal·lar el sistema d'una forma senzilla.
 
 
 El primer que hem de fer és baixar [NOOBS](https://downloads.raspberrypi.org/NOOBS_latest) de la pàgina de Raspberry Pi i descomprimir-lo. A continuació hem de donar format a la targeta; per això podem fer servir l'eina [SDFormatter](https://www.sdcard.org/downloads/formatter_4/), oficial de SD Association.
@@ -69,6 +69,7 @@ Una part important i que dóna sentit a una Raspi és el fet de poder accedir a 
 Per fer això tenim varies opcions:
 
 #### 2.1 dhcpcd.conf (l'opció més senzilla):
+
 Abans de res ens connectem a la nostra WiFi, d'aquesta manera ja tindrem regisrat el SSID i Password, i a continuació obrim un terminal amb la combinació de tecles **Ctrl+Alt+t**. Podem fer-ho també des del menú d'aplicacions.
 
 A continuació hem de modificar l'arxiu *dhcpcd.conf*
@@ -668,6 +669,7 @@ Ara, per provar que tot ha sortit bé, obrirem un nou terminal amb Ctrl+alt+t, i
 	ssh pi@192.168.1.XX
 
 Si després d'introduir la contrassenya aconseguim entrar, és que tot ha sortit com esperàvem. En cas que una vegada introduïda la contrassenya ens tregui fora de la sessió, hem de revisar el que hem fet i buscar algun error. Per això és important fer aquesta prova des d'un altre terminal, ja que si hem fet alguna cosa malament, i sortim de la sessió actual no podriem tornar a accedir a la Raspi.
+
 
 ## Càmera IP
 En quant a la càmera IP, normalment tenen de per sí una interficie web amb la que podem configurar ja algunes opcions, però en el nostre cas ens interessa dependre lo mínim possible d'aquest sistema i interactuar directament amb ella a través de la seva IP. 
