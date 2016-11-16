@@ -9,7 +9,7 @@ Tant l'accés a la càmera com controlar els llums també es podrà fer des d'un
 
 Els materials que s'han fet servir han estat:
 
-- Raspberry Pi (model 3 B)
+- Raspberry Pi (model 1 B)
 - Càmera IP (Dlink DCS-932L)
 - Arduino (UNO)
 - Targeta de memòria SD de 32GB classe 10
