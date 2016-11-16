@@ -27,16 +27,17 @@ La Raspi és el nucli del nostre sistema, pel que és la que més treball requer
 	2. interfaces
 	3. interfaces + wpa_supplicant.conf
 3. Canviar el port SSH (Opcional)
-4. Instal·lar i configurar no-ip
-5. Obrir els ports del router
-6. Instal·lar i configurar un servidor FTP (Opcional)
-7. Instal·lar un servidor Web (2 opcions)
+4. Generar una clau SSH a un dispositiu "client" (Opcional)
+5. Instal·lar i configurar no-ip
+6. Obrir els ports del router
+7. Instal·lar i configurar un servidor FTP (Opcional)
+8. Instal·lar un servidor Web (2 opcions)
 	1. Apache
 	2. nginx
-8. Instal·lar MySQL y phpMyAdmin
-9. Configurar notificacions amb l'API de Pushover
-10. Configurar notificacions per Telegram (Opcional)
-11. Enviar notificacions quan algú fa login
+9. Instal·lar MySQL y phpMyAdmin
+10. Configurar notificacions amb l'API de Pushover
+11. Configurar notificacions per Telegram (Opcional)
+12. Enviar notificacions quan algú fa login
 
 ### 1. Instal·lar i preparar el SO
 
@@ -185,7 +186,7 @@ Ens demanarà la contrassenya que hem modificat al punt 1 (*Mentre s'escriu la c
 
 **Nota:** Si fem servir Windows, hi podrem accedir mitjançant l'aplicació PuTTY.
 
-###3. Canviar el port SSH (Opcional)
+### 3. Canviar el port SSH (Opcional)
 
 Addicionalment podriem voler emprar un port SSH diferent de l'standart (per defecte és el 22). Això ens pot ser útil si volem accedir a la Raspi des de fora de casa i el port 22 ja està utilitzat, o per intentar tenir una mica més de seguretat evitant valors per defecte.
 
@@ -210,8 +211,78 @@ Una vegada fet el canvi, la manera d'accedir a la Raspi per terminal serà
 
 Sent XX l'adreça que li haurem donat a la Raspi en el punt 2.
 
+### 4. Generar una clau SSH a un dispositiu "client" (Opcional)
 
-###4. Instal·lar i configurar no-ip
+Una opció interessant de connectar-nos a la nostra Raspi per SSH és mitjançant claus. Això ens permet una connexió més ràpida ja que no haurem d'introduir la nostra contrassenya cada vegada i, per extensió, més segura, i és necessària per realitzar certes accions (com còpies de seguretat en dispositius remots, com és el nostre cas, i que s'explicarà a l'apartat d'scripts).
+
+Per aconseguir aquesta connexió, primer necessitem generar les claus tant públiques com privades des del dispositiu client, que en aquest cas serà el nostre portàtil (ja que la Raspi faria de "servidor"). Per això, des d'un terminal executem la següent comanda
+
+	ssh-keygen -t rsa
+
+Una vegada executada ens farà algunes preguntes, però ens bastarà amb premer enter fins que ens mostri un missatge semblant al següent
+
+	ssh-keygen -t rsa
+	Generating public/private rsa key pair.
+	Enter file in which to save the key (/home/user/.ssh/id_rsa): 
+	Enter passphrase (empty for no passphrase): 
+	Enter same passphrase again: 
+	Your identification has been saved in /home/user/.ssh/id_rsa.
+	Your public key has been saved in /home/user/.ssh/id_rsa.pub.
+	The key fingerprint is:
+	4a:dd:0a:c6:35:4e:3f:ed:27:38:8c:74:44:4d:93:67 user@a
+	The key's randomart image is:
+	+--[ RSA 2048]----+
+	|          .oo.   |
+	|         .  o.E  |
+	|        + .  o   |
+	|     . = = .     |
+	|      = S = .    |
+	|     o + = +     |
+	|      . o + o .  |
+	|           . o   |
+	|                 |
+	+-----------------+
+
+Això genera les claus públiques i privades del nostre dispositiu, i les guarda a _/home/user/.sshd/id_rsa.pub_ i _/home/user/.sshd/id_rsa_ respectivament.
+
+Una vegada tenim les claus, executarem la següent comanda
+
+	ssh-copy-id pi@192.168.1.XX
+
+Sent XX l'adreça que li haurem donat a la Raspi prèviament.
+
+Segurament ens sortirà un missatge semblant al següent, ons ens demanarà acceptar la connexió i introduir la contrassenya
+
+	The authenticity of host '12.34.56.78 (12.34.56.78)' can't be established.
+	RSA key fingerprint is b1:2d:33:67:ce:35:4d:5f:f3:a8:cd:c0:c4:48:86:12.
+	Are you sure you want to continue connecting (yes/no)? yes
+	Warning: Permanently added '12.34.56.78' (RSA) to the list of known hosts.
+	user@12.34.56.78's password: 
+	Now try logging into the machine, with "ssh 'user@12.34.56.78'", and check in:
+
+	  ~/.ssh/authorized_keys
+
+	to make sure we haven't added extra keys that you weren't expecting.
+
+A partir d'ara, les connexions que es facin des del nostre dispositiu cap a la Raspi no requeriran de contrassenya.
+
+*NOTA:* Si el que volem és guardar la clau per fer connexions des de fora de la xarxa, farem
+
+	ssh-copy-id pi@elmeudomini.ddns.net
+
+Però com crear dominis i accedir des de fora de la xarxa local s'explica al següent punt.
+
+#### Esborrar claus
+
+Si el que volem fer és eliminar la clau que acabem de guardar a la nostra Raspi (per revocar l'accés automàtic, per exemple), el que farem serà obrir el següent fitxer
+
+	sudo nano ~/.ssh/known_hosts
+
+Cercar la línia que correspon al nostre dispositiu (generalment serà la darrera línia del fitxer si no s'han afegit més claus) i l'esborrem.
+
+A partir d'ara, ens tornarà a demanar contrassenya a cada connexió.
+
+### 5. Instal·lar i configurar no-ip
 
 De la mateixa manera que les direccions IP locals poden canviar, també ho fan les direccions IP públiques, pel que potser que ara en tiguem una i demà una altra. Això és un problems si intentem accedir a la Raspi des de fora de la xarxa local, ja que no sabrem quina direcció tenim assignada. Per evitar aquest problema ens ajudarem del servei no-ip.
 
@@ -291,7 +362,7 @@ O si hem canviat el port ssh
 
 Si ens demana contrassenya, vol dir que tot ha sortit bé, i ja podrem accedir a la nostra Raspi des de qualsevol banda (inclús des del mòbil).
 
-###5. Obrir els ports del router
+### 6. Obrir els ports del router
 
 En el punt anterior hem vist com obrir un port del nostre router, i aquí aprofitarem per obrir tots els que ens faci falta pels propers serveis. Així, una vegada dins del router, i com que ja sabem quins tipus de serveis farem servir, aprofitarem per obrir-los tots de cop i ens estalviem haver de fer-ho després un per un.
 
@@ -309,7 +380,7 @@ A més a més, ja que també farem servir una càmera IP, podem obrir el port qu
 
 Canviarem XY per l'adreça que posteriorment li donarem a la nostra càmera, i així ja no haurem de tornar a configurar el router una vegada instal·lada.
 
-###6. Instal·lar i configurar un servidor FTP (Opcional)
+### 7. Instal·lar i configurar un servidor FTP (Opcional)
 
 Un servidor ftp ens pot servir per agafar dades de la Raspi d'una forma senzilla. Per això, tot i que les captures i vídeo de la càmera es faran directament sobre la seva IP, inicialment vam fer servir el servidor ftp per enviar les fotos, pel que creiem convenient explicar el seu procés de configuració.
 
@@ -336,7 +407,7 @@ Tot i així, si no fem cap més modificació, tots els usuaris podrien accedir a
 
 	chroot_local_user=YES
 
-####Connexió per SSL (Opcional)
+#### Connexió per SSL (Opcional)
 
 Si volem afegir un certificat SSL a la nostra conexió, realitzarem els següents passos.
 
@@ -371,7 +442,7 @@ Un cop hem guardat l'arxiu (Ctrl+x --> y --> enter), ens queda reiniciar el serv
 
 	sudo service vsftpd restart
 
-####Canviar el port ftp (Opcional)
+#### Canviar el port ftp (Opcional)
 
 Igual que hem fet amb el port ssh, podem tenir la necessitat de modificar el port ftp. Per això, obrim el fitxer de configuració
 
@@ -389,7 +460,7 @@ I per acabar, reiniciem el servidor
 
 	sudo service vsftpd restart
 
-###7. Instal·lar un servidor WEB
+### 8. Instal·lar un servidor WEB
 
 De servidors web n'hi ha varis, i potser un dels més coneguts sigui Apache. Tot i que la Raspi no té problemes per treballar amb Apache, depen del seu proposit potser amb un de més lleuger com nginx o lighttph ja en tenim prou.
 
@@ -523,7 +594,7 @@ o des de fora de la xarxa
 
 	http://elmeudomini.ddns.net/test.php
 
-### 8. Instal·lar MySQL y phpMyAdmin
+### 9. Instal·lar MySQL y phpMyAdmin
 
 Instal·lem els arxius de MySQL
 
@@ -571,7 +642,7 @@ Provem a veure si podem accedir a phpMyAdmin amb
 
 **Nota:** Tots els fitxers html, php, etc. que farem servir es troben a la carpeta "web" del repositori.
 
-### 9. Configurar notificacions Push amb l'API de Pushover
+### 10. Configurar notificacions Push amb l'API de Pushover
 
 Ja que les notificacions push natives en la nostra pròpia aplicació requereixen de certs passos una mica farragosos (registrar l'app a Google, tenir compte de Google Developer, etc.), hem optat per servir-nos d'una aplicació que ens proporciona aquesta funcionalitat: Pushover.
 
@@ -610,7 +681,7 @@ Aquest seria l'script base per enviar notificacions des de la Raspi al nostre m�
 
 A partir d'aquí, ens podem crear tants scripts com vulguem per enviar notificacions depenent del que ens interessi. Inclús podem cridar aquest script des d'un altre script, si volem.
 
-### 10. Configurar notificacions per Telegram (Opcional)
+### 11. Configurar notificacions per Telegram (Opcional)
 
 Telegram és una aplicació de missatgeria molt versàtil i que gràcies a que és de programari lliure ens permet treballar amb ella més enllà d'enviar missatges als nostres amics.
 
@@ -683,9 +754,9 @@ Per executar-lo, fem
 
 Amb això, podriem utilitzar Telegram per enviar missatges al nostre mòbil en comptes de fer servir Pushover.
 
-### 11. Enviar notificacions quan es fa login
+### 12. Enviar notificacions quan es fa login
 
-Una funcionalitat interessant és la d'enviar una notificació quan algun usuari accedeix a la Raspi. Per això, hem aprofitat l'script de Pushover del punt 9
+Una funcionalitat interessant és la d'enviar una notificació quan algun usuari accedeix a la Raspi. Per això, hem aprofitat l'script de Pushover del punt 10
 
 	sudo nano loginNotification.sh
 
