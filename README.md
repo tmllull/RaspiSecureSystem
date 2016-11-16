@@ -11,7 +11,7 @@ Els materials que s'han fet servir han estat:
 
 - Raspberry Pi (model 1 B)
 - Càmera IP (Dlink DCS-932L)
-- Arduino (UNO)
+- Arduino (Mega)
 - Targeta de memòria SD de 32GB classe 10
 - Sensor de temperatura
 - Sensor de moviment
@@ -35,7 +35,8 @@ La Raspi és el nucli del nostre sistema, pel que és la que més treball requer
 	2. nginx
 8. Instal·lar MySQL y phpMyAdmin
 9. Configurar notificacions amb l'API de Pushover
-10. Enviar notificacions quan algú fa login
+10. Configurar notificacions per Telegram (Opcional)
+11. Enviar notificacions quan algú fa login
 
 ### 1. Instal·lar i preparar el SO
 
@@ -609,9 +610,82 @@ Aquest seria l'script base per enviar notificacions des de la Raspi al nostre m�
 
 A partir d'aquí, ens podem crear tants scripts com vulguem per enviar notificacions depenent del que ens interessi. Inclús podem cridar aquest script des d'un altre script, si volem.
 
-### 10. Enviar notificacions quan es fa login
+### 10. Configurar notificacions per Telegram (Opcional)
 
-Una funcionalitat interessant és la d'enviar una notificació quan algun usuari accedeix a la Raspi. Per això, aprofitant l'script anterior, hem creat el següent
+Telegram és una aplicació de missatgeria molt versàtil i que gràcies a que és de programari lliure ens permet treballar amb ella més enllà d'enviar missatges als nostres amics.
+
+Per instal·lar Telegram, primer necessitem les següents llibreries
+
+	sudo apt-get install libreadline-dev libconfig-dev libssl-dev lua5.2 liblua5.2-dev libevent-dev libjansson-dev libpython-dev make
+
+I després baixar el fork de Telegram per Linux
+
+	git clone --recursive https://github.com/vysheng/tg.git && cd tg
+
+I fem
+
+	./configure
+	make
+
+Una vegada instal·lat l'executem amb
+
+	bin/telegram-cli -k tg-server.pub -W
+
+*NOTA:* Potser en aquest punt ens dóna un error com el següent
+
+	pi@raspberrypi:~/tg $ bin/telegram-cli -k tg-server.pub -W
+	Telegram-cli version 1.4.1, Copyright (C) 2013-2015 Vitaly Valtman
+	Telegram-cli comes with ABSOLUTELY NO WARRANTY; for details type `show_license'.
+	This is free software, and you are welcome to redistribute it
+	under certain conditions; type `show_license' for details.
+	Telegram-cli uses libtgl version 2.1.0
+	Telegram-cli includes software developed by the OpenSSL Project
+	for use in the OpenSSL Toolkit. (http://www.openssl.org/)
+	I: config dir=[/home/pi/.telegram-cli]
+	> telegram-cli: tgl/mtproto-utils.c:101: BN2ull: Assertion `0' failed.
+	SIGNAL received
+
+Si és així, haurem de modificar el fitxer _tgl/mtproto-utils.c_ i comentar les linies 101, 105 i tornar a compilar.
+
+Quan el tenim correctament instal·lat, i la primera vegada que l'executem, ens demanarà el nostre número de telèfon, al qual haurem d'incloure el codi de país (+34 en el cas d'Espanya), i introduir el codi que rebrem via Telegram al nostre mòbil.
+
+I ja el tenim instal·lat. Ara, per enviar missatges ho farem amb la següent comanda
+
+	msg Name_Lastname message
+
+*NOTA:* Name és el nom del nostre contacte, i Lastname el cognom, i s'han de separar amb la barra baixa (_)
+
+##### Scripts per enviar missatges
+
+Podem crear varis scripts per enviar missatges més còmodament sense haver de tenir el client en marxa continuament. Per això, crearem un script amb el nom que vulguem
+
+	sudo nano /home/pi/scripts/tg.sh
+
+i hi afegirem el següent codi
+
+	#!/bin/bash
+	to=$1
+	msg=$2
+	tgpath=/path/to/telegram/tg
+	cd ${tgpath}
+	cmd="bin/telegram-cli -W -k server.pub -e \"msg $to $msg\""
+	eval $cmd
+
+*NOTA:* Tenir en compte que la variable *tgpath* ha de contenir la ruta on hem ubicat la carpeta tg que ens hem baixat el reposiroti.
+
+I li donem els permisos necessaris
+
+	sudo chmod 0655 /home/pi/scripts/tg.sh
+
+Per executar-lo, fem
+
+	tg.sh Name_Lastname Message
+
+Amb això, podriem utilitzar Telegram per enviar missatges al nostre mòbil en comptes de fer servir Pushover.
+
+### 11. Enviar notificacions quan es fa login
+
+Una funcionalitat interessant és la d'enviar una notificació quan algun usuari accedeix a la Raspi. Per això, hem aprofitat l'script de Pushover del punt 9
 
 	sudo nano loginNotification.sh
 
