@@ -401,7 +401,7 @@ Primer crearem un nou grup www-data
 
 	sudo addgroup www-data
 
-I li donarem els permisos necessaris
+I afegim els usuaris al grup
 
 	sudo usermod -a -G www-data www-data
 
