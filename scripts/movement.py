@@ -10,6 +10,6 @@ while True:
 	x = arduino.read().rstrip()
 	if x == ("d"):
 		print "Movement detected"
-#		os.system("/home/pi/scripts/notification.sh > /dev/null") 
+#		os.system("/home/pi/scripts/pushNotification.sh > /dev/null") 
 	arduino.flushInput()
 arduino.close()
