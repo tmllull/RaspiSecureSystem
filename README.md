@@ -21,23 +21,23 @@ A continuació es detalles els passos que s'han seguit per tal de poder congifur
 ## Raspberry Pi
 La Raspi és el nucli del nostre sistema, pel que és la que més treball requereix de configuració. Els passos que s'han seguit són:
 
-1. Instal·lar i preparar el SO
-2. Assignar una IP estàtica (3 opcions)
-	1. dhcpcd.conf
-	2. interfaces
-	3. interfaces + wpa_supplicant.conf
-3. Canviar el port SSH (Opcional)
-4. Generar una clau SSH a un dispositiu "client" (Opcional)
-5. Instal·lar i configurar no-ip
-6. Obrir els ports del router
-7. Instal·lar i configurar un servidor FTP (Opcional)
-8. Instal·lar un servidor Web (2 opcions)
-	1. Apache
-	2. nginx
-9. Instal·lar MySQL y phpMyAdmin
-10. Configurar notificacions amb l'API de Pushover
-11. Configurar notificacions per Telegram (Opcional)
-12. Enviar notificacions quan algú fa login
+1. [Instal·lar i preparar el SO](https://github.com/tmllull/RaspiSecureSystem#1-installar-i-preparar-el-so)
+2. [Assignar una IP estàtica (3 opcions)](https://github.com/tmllull/RaspiSecureSystem#2-assignar-ip-estàtica)
+	1. [dhcpcd.conf](https://github.com/tmllull/RaspiSecureSystem#21-dhcpcdconf-lopció-més-senzilla)
+	2. [interfaces](https://github.com/tmllull/RaspiSecureSystem#22-interfaces)
+	3. [interfaces + wpa_supplicant.conf](https://github.com/tmllull/RaspiSecureSystem#23-interfaces--wpa_supplicantconf)
+3. [Canviar el port SSH (Opcional)](https://github.com/tmllull/RaspiSecureSystem#3-canviar-el-port-ssh-opcional)
+4. [Generar una clau SSH a un dispositiu "client" (Opcional)](https://github.com/tmllull/RaspiSecureSystem#4-generar-una-clau-ssh-a-un-dispositiu-client-opcional)
+5. [Instal·lar i configurar no-ip](https://github.com/tmllull/RaspiSecureSystem#5-installar-i-configurar-no-ip)
+6. [Obrir els ports del router](https://github.com/tmllull/RaspiSecureSystem#6-obrir-els-ports-del-router)
+7. [Instal·lar i configurar un servidor FTP (Opcional)](https://github.com/tmllull/RaspiSecureSystem#7-installar-i-configurar-un-servidor-ftp-opcional)
+8. [Instal·lar un servidor Web (2 opcions)](https://github.com/tmllull/RaspiSecureSystem#8-installar-un-servidor-web)
+	1. [Apache](https://github.com/tmllull/RaspiSecureSystem#apache)
+	2. [nginx](https://github.com/tmllull/RaspiSecureSystem#nginx)
+9. [Instal·lar MySQL y phpMyAdmin](https://github.com/tmllull/RaspiSecureSystem#9-installar-mysql-y-phpmyadmin)
+10. [Configurar notificacions amb l'API de Pushover](https://github.com/tmllull/RaspiSecureSystem#10-configurar-notificacions-push-amb-lapi-de-pushover)
+11. [Configurar notificacions per Telegram (Opcional)](https://github.com/tmllull/RaspiSecureSystem#11-configurar-notificacions-per-telegram-opcional)
+12. [Enviar notificacions quan algú fa login](https://github.com/tmllull/RaspiSecureSystem#12-enviar-notificacions-quan-es-fa-login)
 
 ### 1. Instal·lar i preparar el SO
 
