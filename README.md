@@ -654,7 +654,7 @@ Una recomanació és crear una carpeta al nostre home on guardar els nostres scr
 
 	mkdir scripts
 	cd scripts
-	sudo nano notificacions.sh
+	sudo nano notifications.sh
 
 I dins d'aquest fitxer copiem el següent codi:
 
@@ -683,7 +683,7 @@ A partir d'aquí, ens podem crear tants scripts com vulguem per enviar notificac
 
 ### 11. Configurar notificacions per Telegram (Opcional)
 
-Telegram és una aplicació de missatgeria molt versàtil i que gràcies a que és de programari lliure ens permet treballar amb ella més enllà d'enviar missatges als nostres amics.
+Telegram és una aplicació de missatgeria molt versàtil i gràcies a que és de programari lliure ens permet treballar amb ella més enllà d'enviar missatges als nostres amics.
 
 Per instal·lar Telegram, primer necessitem les següents llibreries
 
@@ -706,25 +706,25 @@ Una vegada instal·lat l'executem amb
 
 	pi@raspberrypi:~/tg $ bin/telegram-cli -k tg-server.pub -W
 	Telegram-cli version 1.4.1, Copyright (C) 2013-2015 Vitaly Valtman
-	Telegram-cli comes with ABSOLUTELY NO WARRANTY; for details type `show_license'.
+	Telegram-cli comes with ABSOLUTELY NO WARRANTY; for details type 'show_license'.
 	This is free software, and you are welcome to redistribute it
-	under certain conditions; type `show_license' for details.
+	under certain conditions; type 'show_license' for details.
 	Telegram-cli uses libtgl version 2.1.0
 	Telegram-cli includes software developed by the OpenSSL Project
 	for use in the OpenSSL Toolkit. (http://www.openssl.org/)
 	I: config dir=[/home/pi/.telegram-cli]
-	> telegram-cli: tgl/mtproto-utils.c:101: BN2ull: Assertion `0' failed.
+	> telegram-cli: tgl/mtproto-utils.c:101: BN2ull: Assertion '0' failed.
 	SIGNAL received
 
-Si és així, haurem de modificar el fitxer _tgl/mtproto-utils.c_ i comentar les linies 101, 105 i tornar a compilar.
+Si és així, haurem de modificar el fitxer _tgl/mtproto-utils.c_, comentar les linies 101 i 105, i tornar a compilar.
 
-Quan el tenim correctament instal·lat, i la primera vegada que l'executem, ens demanarà el nostre número de telèfon, al qual haurem d'incloure el codi de país (+34 en el cas d'Espanya), i introduir el codi que rebrem via Telegram al nostre mòbil.
+Quan el tenim correctament instal·lat, la primera vegada que l'executem ens demanarà el nostre número de telèfon, al qual haurem d'incloure el codi de país (+34 en el cas d'Espanya), i introduir el codi que rebrem via Telegram al nostre mòbil.
 
-I ja el tenim instal·lat. Ara, per enviar missatges ho farem amb la següent comanda
+Ara, per enviar missatges ho farem amb la següent comanda
 
 	msg Name_Lastname message
 
-*NOTA:* Name és el nom del nostre contacte, i Lastname el cognom, i s'han de separar amb la barra baixa (_)
+*NOTA:* Name és el nom del nostre contacte i Lastname el cognom tal i com ens el mostra Telegram a l'aplicació, i s'han de separar amb la barra baixa (_)
 
 ##### Scripts per enviar missatges
 
@@ -742,7 +742,7 @@ i hi afegirem el següent codi
 	cmd="bin/telegram-cli -W -k server.pub -e \"msg $to $msg\""
 	eval $cmd
 
-*NOTA:* Tenir en compte que la variable *tgpath* ha de contenir la ruta on hem ubicat la carpeta tg que ens hem baixat el reposiroti.
+*NOTA:* Tenir en compte que la variable *tgpath* ha de contenir la ruta on hem ubicat la carpeta tg que ens hem baixat del reposiroti.
 
 I li donem els permisos necessaris
 
@@ -756,11 +756,11 @@ Amb això, podriem utilitzar Telegram per enviar missatges al nostre mòbil en c
 
 ### 12. Enviar notificacions quan es fa login
 
-Una funcionalitat interessant és la d'enviar una notificació quan algun usuari accedeix a la Raspi. Per això, hem aprofitat l'script de Pushover del punt 10
+Una funcionalitat interessant és la d'enviar una notificació quan algun usuari accedeix a la Raspi. Per això farem servir un scrip molt similar al del punt 10. Creem el nou script
 
 	sudo nano loginNotification.sh
 
-I hem afegit el següent codi
+I hi afegim el següent codi
 
 	#!/bin/bash
 
@@ -778,11 +778,11 @@ I hem afegit el següent codi
 
 El que fa aquest codi és executar el curl només quan es fa login gràcies a la condició, ja que en principi no ens interessa saber quan es desconnecta. En cas que també ho vulguem saber, n'hi ha prou amb treure el condicional.
 
-I li hem de donar també els permisos d'execució
+Li hem de donar també els permisos d'execució
 
 	sudo chmod +x loginNotification.sh
 
-Per fer que aquest script funcioni, ens queda modificar un arxiu, i és **important fer-ho amb cura ja que un error ens pot bloquejar l'accés a la Raspi**. 
+I per fer que aquest script funcioni, ens queda modificar un arxiu, i és **important fer-ho amb cura ja que un error ens pot bloquejar l'accés a la Raspi**. 
 
 Obrim el següent fitxer
 
@@ -807,14 +807,13 @@ Busquem la part de codi següent, i afegim les linies corresponents al nostre sc
 	session    optional     pam_keyinit.so force revoke
 	............
 
-Guardem el fitxer amb Ctrl+x --> y -- enter.
+Guardem el fitxer amb Ctrl+x --> y --> enter.
 
 Ara, per provar que tot ha sortit bé, obrirem un nou terminal amb Ctrl+alt+t, i provarem a fer login amb el nostre usuari
 
 	ssh pi@192.168.1.XX
 
-Si després d'introduir la contrassenya aconseguim entrar, és que tot ha sortit com esperàvem. En cas que una vegada introduïda la contrassenya ens tregui fora de la sessió, hem de revisar el que hem fet i buscar algun error. Per això és important fer aquesta prova des d'un altre terminal, ja que si hem fet alguna cosa malament, i sortim de la sessió actual no podriem tornar a accedir a la Raspi.
-
+Si després d'introduir la contrassenya aconseguim entrar, és que tot ha sortit com esperàvem. En cas que una vegada introduïda la contrassenya ens tregui fora de la sessió, hem de revisar el que hem fet i buscar algun error. Per això és important fer aquesta prova des d'un altre terminal, ja que si hem fet alguna cosa malament i sortim de la sessió actual no podriem tornar a accedir a la Raspi.
 
 ## Càmera IP
 En quant a la càmera IP, normalment tenen de per sí una interficie web amb la que podem configurar ja algunes opcions, però en el nostre cas ens interessa dependre lo mínim possible d'aquest sistema i interactuar directament amb ella a través de la seva IP. 
@@ -826,12 +825,12 @@ Segons les instruccions del fabricant, les càmeres IP tenen una adreça estable
 1. Assignar un port diferent del port 80 que ve per defecte, que serà el que hem obert al router abans, destinat a la càmera.
 2. Canviar la contrassenya d'accés
 3. Configurar la connexió FTP per comunicar-se amb la Raspi (Opcional)
-4. Anotar l'adreça MAC
+4. Anotar l'adreça MAC de la càmera
 5. Configurar la connexió WiFi afegint el SSID i contrassenya de la nostra xarxa
 
 **Nota:** Cada càmera té la seva interfície, pel que on està cada opció pot variar.
 
-Pel que fa referència a la IP, com podem imaginar també li hem d'assignar una IP estàtica, però en aquest cas hem optat per fer-ho des del router utilitzant l'adreça mac de la càmera, ja que no podem editar cap fitxer (o no tan fàcilment) com sí podiem fer amb la Raspi.
+Pel que fa referència a la IP, com podem imaginar també li hem d'assignar una IP estàtica, però en aquest cas hem optat per fer-ho des del router utilitzant l'adreça mac de la càmera, ja que no podem editar cap fitxer a la càmera (o no tan fàcilment) com sí podiem fer amb la Raspi.
 
 Accedim al router i anem a l'opció de control MAC (novament, cada router és diferent). Afegim la MAC de la càmera i li assignem la mateixa IP que hem posat al obrir el port corresponent en el punt 5.
 
@@ -839,7 +838,7 @@ Després d'això, ja podem desconnectar la càmera de l'ordinador, apagar-la i t
 
 	http://192.168.1.XY:8081
 
-O fent servir el nostre domini de no-ip, i que gràcies a la Raspi sempre estarà actualitzat
+O fent servir el nostre domini de no-ip, i que gràcies a la Raspi sempre estarà actualitzat (requereix haver obert els ports del router previament i haver redirigit les peticions a la IP de la càmera)
 
 	http://elmeudomini.ddns.net:8081
 
@@ -848,6 +847,20 @@ Amb això accedim al menú de la pròpia càmera i podrem realitzar les configur
 Ja podem col·locar la càmera on vulguem, sempre que estigui dins de la cobertura WiFi.
 
 ## Arduino
+
+Pel que fa a l'Arduino, els preparatius són molt més senzills que a la Raspi, ja que tot el que necessitem és muntar tots els components, sensors, etc a una protoboard i fer les connexións pertinents amb l'Arduino.
+
+En el nostre cas farem servir un sensor de moviment per ultrasons i un sensor de temperatura i humitat, juntament amb un relé que els servirà per encendre una bombeta. Les connexions es fan seguint el següent esquema:
+
+----------------------------FOTO------------------------------
+
+Ara passarem a la part de codi, que programarem amb l'IDE d'Arduino ja sigui des de la pròpia Raspi o des de qualsevol altre ordinador.
+
+Baixem l'IDE des de la web oficial d'Arduino i una vegada instal·lat l'executem. Anem a crear un nou projecte i, el primer que farem serà guardar-lo amb el nom que vulguem.
+
+----------------------------En procés--------------------
+
+
 
 ## Aplicació mòbil
 
