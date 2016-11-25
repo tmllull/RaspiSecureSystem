@@ -688,7 +688,8 @@ Telegram és una aplicació de missatgeria molt versàtil i gràcies a que és d
 
 Per instal·lar Telegram, primer necessitem les següents llibreries
 
-	sudo apt-get install libreadline-dev libconfig-dev libssl-dev lua5.2 liblua5.2-dev libevent-dev libjansson-dev libpython-dev make
+	sudo apt-get install libreadline-dev libconfig-dev libssl-dev \ 
+	lua5.2 liblua5.2-dev libevent-dev libjansson-dev libpython-dev make
 
 I després baixar el fork de Telegram per Linux
 
@@ -795,7 +796,7 @@ Busquem la part de codi següent, i afegim les linies corresponents al nostre sc
 	# SELinux needs to be the first session rule.  This ensures that any
 	# lingering context has been cleared.  Without this it is possible that a
 	# module could execute code in the wrong domain.
-	session [success=ok ignore=ignore module_unknown=ignore default=bad]        pam_selinux.so close
+	session [success=ok ignore=ignore module_unknown=ignore default=bad] pam_selinux.so close
 	
 	# El meu script
 	session required pam_exec.so seteuid /home/pi/scripts/loginNotification.sh
@@ -873,8 +874,10 @@ Després hi copiem el següent codi (**************FALTA ACABAR I REVISAR*******
 	// Setup de l'Arduino
 	void setup(){
 	  Serial.begin(9600);
-	  pinMode(9, OUTPUT); /*activación del pin 9 como salida: para el pulso ultrasónico*/
-	  pinMode(8, INPUT); /*activación del pin 8 como entrada: tiempo del rebote del ultrasonido*/
+	  //activación del pin 9 como salida: para el pulso ultrasónico
+	  pinMode(9, OUTPUT);
+	  //activación del pin 8 como entrada: tiempo del rebote del ultrasonido
+	  pinMode(8, INPUT); 
 	  pinMode(13,OUTPUT);
 	  dht.begin();
 	}
@@ -897,7 +900,8 @@ Després hi copiem el següent codi (**************FALTA ACABAR I REVISAR*******
 	
 	// Moviment
 	void movement() {
-	  digitalWrite(9,LOW); /* Por cuestión de estabilización del sensor*/
+	  /* Por cuestión de estabilización del sensor*/
+	  digitalWrite(9,LOW); 
 	  delayMicroseconds(10);
 	  digitalWrite(9, HIGH); 
 	  delayMicroseconds(10);
