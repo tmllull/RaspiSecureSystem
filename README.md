@@ -866,7 +866,7 @@ Després hi copiem el següent codi (**************FALTA ACABAR I REVISAR*******
 	long dist;
 	long time;
 	DHT dht(pin,DHT11);
-	int cont=100;
+	int cont=1000;
 	boolean checked=false;
 	
 	// Setup de l'Arduino
@@ -879,38 +879,38 @@ Després hi copiem el següent codi (**************FALTA ACABAR I REVISAR*******
 	}
 	
 	// Mirem si s'ha d'interactuar amb el led
-	void led(){
+	void light(){
 	  char option;
 	  if(Serial.available() >0){
 	    option = Serial.read();
 	    if(option== 'h'){
 	      digitalWrite(13,HIGH);
-	      Serial.println("ON");
+	      //Serial.println("ON");
 	    }
 	    else if(option=='l'){ 
 	      digitalWrite(13,LOW);
-	      Serial.println("OFF");
+	      //Serial.println("OFF");
 	    }
 	  }
 	}
 	
 	// Comprovem la distància per la detecció de moviment
-	void dist() {
+	void movement() {
 	  digitalWrite(9,LOW); /* Por cuestión de estabilización del sensor*/
 	  delayMicroseconds(10);
 	  digitalWrite(9, HIGH); 
 	  delayMicroseconds(10);
 	  time=pulseIn(8, HIGH); 
 	  dist= int(0.017*time); 
-	  if (dist < 50 and cont == 100 and dist !=0){
+	  if (dist < 50 and cont == 1000 and dist !=0){
 	    Serial.println("d");
 	    checked=true;
 	  }
 	}
 	
 	// Temperatura
-	void temp() {
-	  if((temp -4.0) >= 30.0 and cont == 100){
+	void temperature() {
+	  if((temp -4.0) >= 30.0 and cont == 1000){
 	    Serial.println("t");
 	    checked=true;
 	  }
@@ -918,20 +918,20 @@ Després hi copiem el següent codi (**************FALTA ACABAR I REVISAR*******
 	
 	// Loop principal (main)
 	void loop() {
-	  led();
-	  dist();
-	  temp();
+	  light();
+	  movement();
+	  temperature();
 	  if(checked) --cont;
 	  if(cont==0){
-	    cont=100;
+	    cont=1000;
 	    checked=false;
 	  }
-	  delay(100);
+	  delay(10);
 	}
 
-Aquest codi té un loop infinit (requeriment indispensable per tot codi d'Arduino) amb un delay de 100 milis al final del mateix, on es comproven varies coses a cada "volta". D'una banda es mira si tenim cap ordre per encendre el led (o bombeta en cas de tenir un relé), després comprova si hi ha hagut moviment i, finalment, fa una medició de la temperatura.
+Aquest codi té un loop infinit (requeriment indispensable per tot codi d'Arduino) amb un delay de 10 milis al final del mateix, on es comproven varies coses a cada "volta". D'una banda es mira si tenim cap ordre per encendre el led (o bombeta en cas de tenir un relé), després comprova si hi ha hagut moviment i, finalment, fa una medició de la temperatura.
 
-Totes aquestes comprovacions es fan cada 100 milisegons fins que la funció de moviment o temperatura s'activa i envia les dades cap a la Raspi. En aquest moment es posa un temps de "refredament" de 10 segons en aquestes dues per evitar saturar tan el bus com l'enviament de notificacions per part de la Raspi cap al nostre mobil. Si no ho fem així, podriem estar enviant notificacions cada 100 milisegons si algú es queda parat davant del sensor de moviment, per exemple.
+Totes aquestes comprovacions es fan cada 10 milisegons fins que la funció de moviment o temperatura s'activa i envia les dades cap a la Raspi. En aquest moment es posa un temps de "refredament" de 10 segons en aquestes dues per evitar saturar tan el bus com l'enviament de notificacions per part de la Raspi cap al nostre mobil. Si no ho fem així, podriem estar enviant notificacions cada 10 milisegons si algú es queda parat davant del sensor de moviment, per exemple.
 
 El funcionament de cada part del codi és bastant fàcil d'entendre, pel que no la detallarem.
 
