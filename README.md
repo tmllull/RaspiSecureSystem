@@ -413,7 +413,8 @@ Si volem afegir un certificat SSL a la nostra conexió, realitzarem els següent
 
 Primer creem el certificat amb la següent comanda:
 
-	sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 -keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
+	sudo openssl req -x509 -nodes -days 365 -newkey rsa:1024 \ 
+	-keyout /etc/ssl/private/vsftpd.pem -out /etc/ssl/private/vsftpd.pem
 
 Això ens crea varis arxius, la ruta dels quals haurem d'afegir al fitxer de configuració del servidor. Per tant, el tornem a obrir
 
