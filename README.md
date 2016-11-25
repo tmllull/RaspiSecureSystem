@@ -878,7 +878,7 @@ Després hi copiem el següent codi (**************FALTA ACABAR I REVISAR*******
 	  dht.begin();
 	}
 	
-	// Mirem si s'ha d'interactuar amb el led
+	// Llums
 	void light(){
 	  char option;
 	  if(Serial.available() >0){
@@ -894,7 +894,7 @@ Després hi copiem el següent codi (**************FALTA ACABAR I REVISAR*******
 	  }
 	}
 	
-	// Comprovem la distància per la detecció de moviment
+	// Moviment
 	void movement() {
 	  digitalWrite(9,LOW); /* Por cuestión de estabilización del sensor*/
 	  delayMicroseconds(10);
