@@ -16,6 +16,15 @@ Els materials que s'han fet servir han estat:
 - Sensor de temperatura
 - Sensor de moviment
 
+L'índex del contingut d'aquest document és el següent:
+
+1. Raspi
+2. Càmera IP
+3. Arduino
+4. Aplicació mòbil
+5. Scripts
+6. Web
+
 A continuació es detalles els passos que s'han seguit per tal de poder congifurar-ho tot.
 
 ## Raspberry Pi
@@ -850,11 +859,15 @@ Ja podem col·locar la càmera on vulguem, sempre que estigui dins de la cobertu
 
 ## Arduino
 
-Pel que fa a l'Arduino, els preparatius són molt més senzills que a la Raspi, ja que tot el que necessitem és muntar tots els components, sensors, etc a una protoboard i fer les connexións pertinents amb l'Arduino.
+Pel que fa a l'Arduino, els preparatius són molt més senzills que a la Raspi, ja que tot el que necessitem és muntar tots els components, sensors, etc. a una protoboard i fer les connexións pertinents amb l'Arduino.
 
-En el nostre cas farem servir un sensor de moviment per ultrasons i un sensor de temperatura i humitat, juntament amb un relé que els servirà per encendre una bombeta. Les connexions es fan seguint el següent esquema:
+### Connexions dels sensors a la protoboard
+
+En el nostre cas farem servir un sensor de moviment per ultrasons i un sensor de temperatura i humitat, juntament amb un relé que ens servirà per encendre una bombeta. Les connexions es fan seguint el següent esquema:
 
 ----------------------------FOTO------------------------------
+
+### Codi
 
 Ara passarem a la part de codi, que programarem amb l'IDE d'Arduino ja sigui des de la pròpia Raspi o des de qualsevol altre ordinador.
 
@@ -940,7 +953,12 @@ Totes aquestes comprovacions es fan cada 10 milisegons fins que la funció de mo
 
 El funcionament de cada part del codi és bastant fàcil d'entendre, pel que no la detallarem.
 
+### Connexió amb la Raspi
 
 ## Aplicació mòbil
 
 De l'aplicació mòbil no en parlarem, ja que podem trobar el codi a la carpeta "App" del repositori, que es podrà baixar, consultar i provar.
+
+## Scripts
+
+## Web
