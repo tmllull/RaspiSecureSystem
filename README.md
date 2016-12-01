@@ -961,4 +961,115 @@ De l'aplicació mòbil no en parlarem, ja que podem trobar el codi a la carpeta 
 
 ## Scripts
 
+En aquest apartat mostrarem els scripts que creiem més rellevants de cara al nostre projecte, però per veure'ls tots ens podem dirigir a la carpeta scripts del repositori
+
+### pushNotification.sh
+
+	#!/bin/bash
+	MSG="message=Message to send"
+	curl -s \
+	    --form-string "token=APPTOKEN" \
+	    --form-string "user=USERTOKEN" \
+	    --form-string "$MSG" \
+	    https://api.pushover.net/1/messages.json
+	exit 0
+
+
+### logNotification.sh
+
+	#!/bin/bash
+
+	#Using PAM
+	MSG="message=Login from user $PAM_USER"
+	MSG2="message=Logout from user $PAM_USER"
+
+	if [ "$PAM_TYPE" == "open_session" ]; then
+		curl -s \
+		--form-string "token=APPTOKEN" \
+		--form-string "user=USERTOKEN" \
+		--form-string "$MSG" \
+		https://api.pushover.net/1/messages.json
+	elif [ "$PAM_TYPE" == "close_session" ]; then 
+		curl -s \
+		--form-string "token=APPTOKEN" \
+		--form-string "user=USERTOKEN" \
+		--form-string "$MSG2" \
+		https://api.pushover.net/1/messages.json
+	fi
+	exit 0
+
+### runProcess.sh
+
+	#!/bin/bash
+
+	if [ ! -f /path/to/save/pid/process.pid ]; then
+		python /path/to/script/process.py &
+		echo $! > /path/to/save/pid/process.pid
+	else 
+		echo "Process is running"
+	fi
+
+### killProcess.sh
+
+	#!/bin/bash
+	pid=$(cat /path/to/saved/pid/process.pid) 
+	kill -9 $pid
+	rm /path/to/saved/pid/process.pid
+
+### movement.py
+
+	import serial
+	import os
+	import time
+
+	arduino=serial.Serial('/dev/ttyACM0',9600)
+	#arduino.open()
+
+	while True:
+	    time.sleep(0.5)
+	    x = arduino.read().rstrip()
+	    if x == ("d"):
+		print "Movement detected"
+		#os.system("/home/pi/scripts/pushNotification.sh > /dev/null")
+	    arduino.flushInput()
+	arduino.close()
+
+### telegramMessage.sh
+
+	#!/bin/bash
+
+	to=$1
+	msg=$2
+	tgpath=/path/to/tg/folder
+	cd ${tgpath}
+	cmd="bin/telegram-cli -W -k server.pub -e \"msg $to $msg\""
+	eval $cmd
+
+### backups.py
+
+	#!/bin/sh
+
+	MSG="message=Backup completed"
+	MSG2="message=ERROR: Backup Failed"
+
+
+	sudo tar -cf "/home/pi/backups/backup_$(date '+%F').tar" /home /var/www/
+	rsync -ae ssh /home/pi/backups/* pi@192.168.1.13:/media/hdd/backups/pti
+	sudo rm /home/pi/backups/*
+
+	if [ "$?" -eq "0" ] || [ "$?" -eq "1" ];
+	then
+	  curl -s \
+		--form-string "token=XXX" \
+		--form-string "user=XXX" \
+		--form-string "$MSG" \
+		https://api.pushover.net/1/messages.json
+	else
+	  curl -s \
+		--form-string "token=XXX" \
+		--form-string "user=XXX" \
+		--form-string "$MSG2" \
+		https://api.pushover.net/1/messages.json
+	fi
+
 ## Web
