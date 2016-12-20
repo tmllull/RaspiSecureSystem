@@ -1,5 +1,5 @@
 # RaspiSecureSystem
-Aquest és un projecte per a l'especialitat d'IT de la carrera de _Grau en Enginyeria Informàtica_ de la FIB, que consisteix en crear un petit sistema de seguretat utilitzant una Raspberry Pi (a partir d'ara, Raspi), una càmera IP, un Arduino i varis sensors.
+Projecte per a l'especialitat d'IT de la carrera de _Grau en Enginyeria Informàtica_ de la FIB, que consisteix en crear un petit sistema de seguretat utilitzant una Raspberry Pi (a partir d'ara, Raspi), una càmera IP, un Arduino i varis sensors.
 
 Aquest sistema ens permetrà veure què passa a la nostra casa o habitació des d'una pàgina web, i gràcies a un sensor de movient podrem fer que la càmera faci una foto i ens l'envii per correu o ens avisi amb una notificació al mòbil.
 
@@ -20,12 +20,9 @@ L'índex del contingut d'aquest document és el següent:
 
 1. [Raspi](https://github.com/tmllull/RaspiSecureSystem/blob/master/README.md#raspberry-pi)
 2. [Càmera IP](https://github.com/tmllull/RaspiSecureSystem/blob/master/README.md#càmera-ip)
-3. [Arduino](https://github.com/tmllull/RaspiSecureSystem/blob/master/README.md#arduino)
-4. [Aplicació mòbil](https://github.com/tmllull/RaspiSecureSystem/blob/master/README.md#aplicació-mòbil)
-5. [Scripts](https://github.com/tmllull/RaspiSecureSystem/blob/master/README.md#scripts)
-6. [Web](https://github.com/tmllull/RaspiSecureSystem/blob/master/README.md#web)
+3. [Scripts](https://github.com/tmllull/RaspiSecureSystem/blob/master/README.md#scripts)
 
-A continuació es detalles els passos que s'han seguit per tal de poder congifurar-ho tot.
+A continuació es detalles els passos que s'han seguit per tal de poder congifurar la Raspberry i la càmera IP, ja que de l'APP trobarem el codi a la carpeta Android, igual que els codis d'Arduino i de la web.
 
 ## Raspberry Pi
 La Raspi és el nucli del nostre sistema, pel que és la que més treball requereix de configuració. Els passos que s'han seguit són:
@@ -857,108 +854,6 @@ Amb això accedim al menú de la pròpia càmera i podrem realitzar les configur
 
 Ja podem col·locar la càmera on vulguem, sempre que estigui dins de la cobertura WiFi.
 
-## Arduino
-
-Pel que fa a l'Arduino, els preparatius són molt més senzills que a la Raspi, ja que tot el que necessitem és muntar tots els components, sensors, etc. a una protoboard i fer les connexións pertinents amb l'Arduino.
-
-### Connexions dels sensors a la protoboard
-
-En el nostre cas farem servir un sensor de moviment per ultrasons i un sensor de temperatura i humitat, juntament amb un relé que ens servirà per encendre una bombeta. Les connexions es fan seguint el següent esquema:
-
-----------------------------FOTO------------------------------
-
-### Codi
-
-Ara passarem a la part de codi, que programarem amb l'IDE d'Arduino ja sigui des de la pròpia Raspi o des de qualsevol altre ordinador.
-
-Baixem l'IDE des de la web oficial d'Arduino i una vegada instal·lat l'executem. Anem a crear un nou projecte i, el primer que farem serà guardar-lo amb el nom que vulguem.
-
-Després hi copiem el següent codi (**************FALTA ACABAR I REVISAR*******************)
-
-	#include "DHT.h"
-	int pin=2;
-	float temp;
-	long dist;
-	long time;
-	DHT dht(pin,DHT11);
-	int cont=1000;
-	boolean checked=false;
-	
-	// Setup de l'Arduino
-	void setup(){
-	  Serial.begin(9600);
-	  //activación del pin 9 como salida: para el pulso ultrasónico
-	  pinMode(9, OUTPUT);
-	  //activación del pin 8 como entrada: tiempo del rebote del ultrasonido
-	  pinMode(8, INPUT); 
-	  pinMode(13,OUTPUT);
-	  dht.begin();
-	}
-	
-	// Llums
-	void light(){
-	  char option;
-	  if(Serial.available() >0){
-	    option = Serial.read();
-	    if(option== 'h'){
-	      digitalWrite(13,HIGH);
-	      //Serial.println("ON");
-	    }
-	    else if(option=='l'){ 
-	      digitalWrite(13,LOW);
-	      //Serial.println("OFF");
-	    }
-	  }
-	}
-	
-	// Moviment
-	void movement() {
-	  /* Por cuestión de estabilización del sensor*/
-	  digitalWrite(9,LOW); 
-	  delayMicroseconds(10);
-	  digitalWrite(9, HIGH); 
-	  delayMicroseconds(10);
-	  time=pulseIn(8, HIGH); 
-	  dist= int(0.017*time); 
-	  if (dist < 50 and cont == 1000 and dist !=0){
-	    Serial.println("d");
-	    checked=true;
-	  }
-	}
-	
-	// Temperatura
-	void temperature() {
-	  if((temp -4.0) >= 30.0 and cont == 1000){
-	    Serial.println("t");
-	    checked=true;
-	  }
-	}
-	
-	// Loop principal (main)
-	void loop() {
-	  light();
-	  movement();
-	  temperature();
-	  if(checked) --cont;
-	  if(cont==0){
-	    cont=1000;
-	    checked=false;
-	  }
-	  delay(10);
-	}
-
-Aquest codi té un loop infinit (requeriment indispensable per tot codi d'Arduino) amb un delay de 10 milis al final del mateix, on es comproven varies coses a cada "volta". D'una banda es mira si tenim cap ordre per encendre el led (o bombeta en cas de tenir un relé), després comprova si hi ha hagut moviment i, finalment, fa una medició de la temperatura.
-
-Totes aquestes comprovacions es fan cada 10 milisegons fins que la funció de moviment o temperatura s'activa i envia les dades cap a la Raspi. En aquest moment es posa un temps de "refredament" de 10 segons en aquestes dues per evitar saturar tan el bus com l'enviament de notificacions per part de la Raspi cap al nostre mobil. Si no ho fem així, podriem estar enviant notificacions cada 10 milisegons si algú es queda parat davant del sensor de moviment, per exemple.
-
-El funcionament de cada part del codi és bastant fàcil d'entendre, pel que no la detallarem.
-
-### Connexió amb la Raspi
-
-## Aplicació mòbil
-
-De l'aplicació mòbil no en parlarem, ja que podem trobar el codi a la carpeta "App" del repositori, que es podrà baixar, consultar i provar.
-
 ## Scripts
 
 En aquest apartat mostrarem els scripts que creiem més rellevants de cara al nostre projecte, però per veure'ls tots ens podem dirigir a la carpeta scripts del repositori
@@ -1071,5 +966,3 @@ En aquest apartat mostrarem els scripts que creiem més rellevants de cara al no
 		--form-string "$MSG2" \
 		https://api.pushover.net/1/messages.json
 	fi
-
-## Web
