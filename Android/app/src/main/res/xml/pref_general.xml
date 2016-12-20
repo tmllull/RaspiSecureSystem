@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <PreferenceCategory
+        android:title="Raspberry Pi"
+        android:key="RaspberryPiSettings">
+
+        <EditTextPreference
+            android:title="@string/pref_username_label"
+            android:key="@string/pref_username_key"
+            android:inputType="text"
+            android:singleLine="true" />
+
+        <EditTextPreference
+            android:title="@string/pref_password_label"
+            android:key="@string/pref_password_key"
+            android:password="true"
+            android:singleLine="true" />
+
+        <EditTextPreference
+            android:title="Domain name"
+            android:key="domain name"
+            android:inputType="text"
+            android:singleLine="true" />
+
+        <EditTextPreference
+            android:title="Port"
+            android:key="port"
+            android:inputType="number"
+            android:singleLine="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="IP Camera"
+        android:key="IPCameraSettings">
+
+        <EditTextPreference
+            android:title="User"
+            android:key="userCamera"
+            android:inputType="text"
+            android:singleLine="true" />
+
+        <EditTextPreference
+            android:title="Password"
+            android:key="passwordCamera"
+            android:password="true"
+            android:singleLine="true" />
+
+        <EditTextPreference
+            android:title="Domain name"
+            android:key="domainNameCamera"
+            android:inputType="text"
+            android:singleLine="true" />
+
+        <EditTextPreference
+            android:title="Port"
+            android:key="portCamera"
+            android:inputType="number"
+            android:singleLine="true" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

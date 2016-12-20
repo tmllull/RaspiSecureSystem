@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/coordinatorLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ScheduleActivity">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/app_background_opacity">
+
+        <TimePicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/timePicker" />
+
+        <Button
+            android:text="set stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/beginButton"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="54dp"
+            android:id="@+id/endButton"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="49dp"
+            android:id="@+id/beginButton"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:text="set start"
+            android:layout_above="@+id/activateButton"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="17dp" />
+
+        <Button
+            android:text="activate now"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="7dp"
+            android:id="@+id/activateButton"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentBottom="true"
+            android:layout_alignEnd="@+id/beginButton" />
+
+        <Button
+            android:text="deactivate now"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deactivateButton"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimary"
+            android:layout_alignBaseline="@+id/activateButton"
+            android:layout_alignBottom="@+id/activateButton"
+            android:layout_alignStart="@+id/endButton" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
