@@ -1,68 +1,79 @@
 #include "DHT.h"
-int pin=2;
-float temp;
-long dist;
-long time;
-DHT dht(pin,DHT11);
-int cont=1000;
-boolean checked=false;
+int temp; //temperatura
+long distancia; //distancia del objeto al sensor
+long tiempo; // tiempo de ultrasonidos
+int pin=2; //pin de temperatura
+DHT dht(pin,DHT11); //sensor tipo DHT11
+int cont=28; //cada 10 segundos aprox cambia
+int cont_temp = 122; // contador de temperatura. cada 1 min cambia 
+boolean trobat=false; //cada 10 segundos cambia movement sensor
+boolean trobat_temp = false; // cada 1 min cambia temperature sensor
+int relay = 12; //pin del relé
+char val = '0'; // 1=encender luz, 0= apagar luz
+int led = 5; //pin del led
+void encender_luz(){
+  if(Serial.available()>0){
+    val = Serial.read();
+    if(val == '1'){
+      digitalWrite(relay,LOW); //ENCENDER
+    }
+    else{
+      digitalWrite(relay,HIGH); //APAGAR
+    }
+  }
+}
 
-// Setup de l'Arduino
+void movement(){
+  digitalWrite(9,LOW); /* Por cuestión de estabilización del sensor*/
+  delayMicroseconds(10);
+  digitalWrite(9, HIGH);
+  delayMicroseconds(10);
+  tiempo=pulseIn(8, HIGH);
+  distancia= int(0.017*tiempo);
+  if (distancia < 20 and cont == 28 and distancia != 0){
+   digitalWrite(led,HIGH);
+   Serial.println("dd"); //enviamos una d por el puerto serie
+   Serial.flush();
+    trobat=true;
+  }
+  if(cont == 14) digitalWrite(led,LOW);
+  if(trobat) --cont;
+  if(cont==0) { 
+    cont=28; 
+    trobat=false;
+    
+    }
+}
+
+void temperature(){
+  temp = dht.readTemperature();
+  if(!isnan(temp)){
+    if (cont_temp == 122){
+    Serial.println(temp - 3); // enviamos la temperatura por el puerto serie
+    Serial.flush();
+    trobat_temp = true;
+    }
+  }
+  if(trobat_temp) --cont_temp;
+  if(cont_temp == 0) { 
+    cont_temp = 122; 
+    trobat_temp = false;
+  }
+}
+
 void setup(){
   Serial.begin(9600);
   pinMode(9, OUTPUT); /*activación del pin 9 como salida: para el pulso ultrasónico*/
   pinMode(8, INPUT); /*activación del pin 8 como entrada: tiempo del rebote del ultrasonido*/
-  pinMode(13,OUTPUT);
-  dht.begin();
+  pinMode(relay,OUTPUT); // pin 12 de salida para la luz
+  digitalWrite(relay,HIGH); //DEFAULT APAGADO
+  dht.begin(); //init del sensor de temperatura
 }
 
-// Llums
-void light(){
-  char option;
-  if(Serial.available() >0){
-    option = Serial.read();
-    if(option== 'h'){
-      digitalWrite(13,HIGH);
-      //Serial.println("ON");
-    }
-    else if(option=='l'){ 
-      digitalWrite(13,LOW);
-      //Serial.println("OFF");
-    }
-  }
-}
 
-// Moviment
-void movement() {
-  digitalWrite(9,LOW); /* Por cuestión de estabilización del sensor*/
-  delayMicroseconds(10);
-  digitalWrite(9, HIGH); 
-  delayMicroseconds(10);
-  time=pulseIn(8, HIGH); 
-  dist= int(0.017*time); 
-  if (dist < 50 and cont == 1000 and dist !=0){
-    Serial.println("d");
-    checked=true;
-  }
-}
-
-// Temperatura
-void temperature() {
-  if((temp -4.0) >= 30.0 and cont == 1000){
-    Serial.println("t");
-    checked=true;
-  }
-}
-
-// Loop principal (main)
 void loop() {
-  light();
+  encender_luz();
   movement();
   temperature();
-  if(checked) --cont;
-  if(cont==0){
-    cont=1000;
-    checked=false;
-  }
-  delay(10);
+  delay(100); 
 }
