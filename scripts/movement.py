@@ -3,13 +3,19 @@ import os
 import time
 
 arduino=serial.Serial('/dev/ttyACM0',9600)
-#arduino.open()
+arduino.flushInupt()
+arduino.flushOutput()
 
 while True:
-	time.sleep(0.5)
-	x = arduino.read().rstrip()
+	x = arduino.read(2).rstrip('\n')
+	arduino.flushInupt()
+	arduino.flushOutput()
 	if x == ("d"):
-		print "Movement detected"
-#		os.system("/home/pi/scripts/pushNotification.sh > /dev/null") 
+		os.system("/home/pi/scripts/pushNotification.sh > /dev/null")
+	elif x.isdigit():
+		file = open("home/pi/temp.txt","a+")
+		file.write(x + '\n')
+		file.close()
 	arduino.flushInput()
+	arduino.flushOutput()
 arduino.close()
